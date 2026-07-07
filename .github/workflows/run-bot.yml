@@ -10,20 +10,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
       - name: Install libraries
         run: |
-          pip install requests PyGithub pytrends
+          pip install -r requirements.txt
 
       - name: Run AI Script
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python static_blogger.py
-        
+
+      - name: Save and Push Changes to GitHub
+        run: |
+          git config --global user.name "Infovex AI Bot"
+          git config --global user.email "bot@infovex.com"
+          git add index.html
+          git commit -m "Auto-updated website content via Gemini AI [skip ci]" || echo "No changes to commit"
+          git push
