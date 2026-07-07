@@ -21,11 +21,9 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Lora', Georgia, serif; background-color: var(--bg-white); color: var(--nyt-black); line-height: 1.6; padding-bottom: 50px; }
 
-        /* HEADER & LOGO */
         header { padding: 15px 20px 5px 20px; text-align: center; max-width: 1300px; margin: 0 auto; }
         .logo { font-family: 'Cinzel', serif; font-size: 45px; font-weight: 900; letter-spacing: 3px; text-decoration: none; color: var(--nyt-black); display: inline-block; }
         
-        /* NYT STYLE CATEGORIES LINKS BAR */
         .categories-nav { border-top: 1px solid var(--nyt-border); border-bottom: 4px double var(--nyt-black); padding: 8px 0; max-width: 1300px; margin: 0 auto 15px auto; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
         .categories-nav a { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--nyt-black); text-decoration: none; letter-spacing: 0.5px; transition: 0.15s; }
         .categories-nav a:hover { color: var(--nyt-red); text-decoration: underline; }
@@ -34,12 +32,10 @@
         .live-dot { color: var(--nyt-red); animation: blink 1.2s infinite; margin-right: 5px; font-size: 16px; vertical-align: middle; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* HOME SCREEN LAYOUT */
         .main-container { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 1fr 360px; gap: 40px; padding: 0 20px; }
         .news-section { border-right: 1px solid var(--nyt-border); padding-right: 30px; }
         .section-header { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; border-bottom: 1px solid var(--nyt-black); padding-bottom: 5px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--nyt-black); }
         
-        /* POST CARDS */
         .post-card { border-bottom: 1px solid var(--nyt-border); padding-bottom: 25px; margin-bottom: 25px; display: flex; flex-direction: column; gap: 12px; cursor: pointer; }
         .post-card:last-child { border-bottom: none; }
         .post-card .meta { font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; color: var(--nyt-red); font-weight: 700; letter-spacing: 0.5px; }
@@ -48,7 +44,6 @@
         .post-card .preview-text { font-size: 15px; color: #444; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-align: justify; }
         .post-card .full-story { display: none; }
 
-        /* SHORTS STICKY STREAM */
         .shorts-sticky { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 20px; max-height: 90vh; overflow-y: auto; }
         .short-card { background: var(--bg-white); border-bottom: 1px solid var(--nyt-border); padding-bottom: 15px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; }
         .short-card .short-tag { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; color: var(--nyt-red); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -56,7 +51,6 @@
         .short-card p { font-family: 'Inter', sans-serif; font-size: 13px; color: #555; line-height: 1.5; }
         .short-card:hover h4 { text-decoration: underline; }
 
-        /* NYT SINGLE PAGE VIEW (Gaps Alignment Fixed) */
         #single-page-view { display: none; max-width: 800px; margin: 0 auto; padding: 20px 0; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
@@ -69,7 +63,7 @@
         
         .nyt-content { width: 100%; }
         .nyt-content p { font-size: 18px; color: #111; line-height: 1.75; margin-bottom: 25px; text-align: justify; font-family: 'Lora', Georgia, serif; }
-        .nyt-content img { width: 100% !important; max-width: 100% !important; height: auto !important; display: block; margin: 25px 0; }
+        .nyt-content img { width: 100% !important; max-width: 100% !important; height: auto !important; display: block; margin: 25px 0; border-radius:4px; border:1px solid #eee; }
 
         @media (max-width: 950px) {
             .main-container { grid-template-columns: 1fr; }
@@ -110,35 +104,13 @@
         <main class="news-section">
             <div class="section-header">Latest Editorial Feed</div>
             <div id="posts-container">
-
-    <div class="post-card">
-        <div class="meta">July 07, 2026 • 07:00 PM • Global Facts</div>
-        <h2>Continuing Legal Education For Advocates Necessary : Supreme Court Urges BCI To Establish National Legal...</h2>
-        <div class="preview-text">Latest comprehensive editorial report on Continuing Legal Education For Advocates Necessary : Supreme Court Urges BCI To Establish National Legal... has been released. Click to read the full analysis.</div>
-        <div class="full-story">
-            
-    <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80" alt="Breaking Header" style="width:100% !important; max-width:100% !important; display:block; max-height:480px; object-fit:cover; margin:25px 0; border-radius:4px; border:1px solid #eee;">
-    <p>In a notable shift for regional observation circles, the latest developments surrounding <b>Continuing Legal Education For Advocates Necessary : Supreme Court Urges BCI To Establish National Legal...</b> have captured immediate attention. Administrative departments and public stakeholders are analyzing the practical consequences of this adjustment. Frontline voices in the Global Facts sector suggest that these newly introduced parameters will require strategic updates across both localized networks and broader operational frameworks.</p>
-    <p>As experts study the core logistics, initial updates highlight a series of process compliance milestones that demand focus over the coming transition cycle. Media platforms and panels indicate that maintaining consistency across regional distribution channels will be essential to sustain steady momentum moving forward.</p>
-    <img src="https://images.unsplash.com/photo-1495020689067-958852a6565d?auto=format&fit=crop&w=1200&q=80" alt="Core Analysis" style="width:100% !important; max-width:100% !important; display:block; max-height:480px; object-fit:cover; margin:25px 0; border-radius:4px; border:1px solid #eee;">
-    <p>Furthermore, execution teams advise tracking authorized portals and official releases closely for direct instructions rather than unofficial bulletins. Specific operational adjustments are expected to roll out sequentially across designated systems over the next few weeks.</p>
-    <img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1200&q=80" alt="Editorial Context" style="width:100% !important; max-width:100% !important; display:block; max-height:480px; object-fit:cover; margin:25px 0; border-radius:4px; border:1px solid #eee;">
-    <p>Ultimately, the long-term path will depend heavily on how smoothly localized platforms integrate these updates. As administrative groups realign their approaches, observers continue to watch this scenario closely, awaiting subsequent updates from management committees.</p>
-    
-        </div>
-    </div>
-    </div>
+</div>
         </main>
 
         <aside class="shorts-section">
             <div class="section-header">⚡ Google Shorts</div>
             <div class="shorts-sticky" id="shorts-container">
-
-    <div class="short-card">
-        <div class="short-tag">Global Facts</div>
-        <h4>Quick Update on Continuing Legal Education For Advocates Necessary : Supreme Court Urges BCI To Establish National Legal...</h4><p>The operational framework for Continuing Legal Education For Advocates Necessary : Supreme Court Urges BCI To Establish National Legal... is expanding under the Global Facts matrix. Observers highlight key metrics taking effect across regional channels.</p>
-    </div>
-    </div>
+</div>
         </aside>
     </div>
 
