@@ -3,405 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infovex | Professional News Portal</title>
+    <title>INFOVEX — Premium AI News Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-    :root {
-        --bg-main: #04060d;
-        --text-main: #f8fafc;
-        --text-muted: #94a3b8;
-        --accent: #38bdf8;
-        --glass-bg: rgba(255, 255, 255, 0.03);
-        --glass-border: rgba(255, 255, 255, 0.05);
-        --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-        --nav-bg: rgba(4, 6, 13, 0.8);
-    }
+        :root {
+            --nyt-black: #121212;
+            --nyt-gray: #666666;
+            --nyt-border: #dddddd;
+            --nyt-red: #a31a1a;
+            --bg-white: #ffffff;
+        }
 
-    [data-theme="light"] {
-        --bg-main: #f1f5f9;
-        --text-main: #0f172a;
-        --text-muted: #475569;
-        --accent: #0284c7;
-        --glass-bg: rgba(255, 255, 255, 0.7);
-        --glass-border: rgba(255, 255, 255, 1);
-        --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
-        --nav-bg: rgba(241, 245, 249, 0.8);
-    }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Lora', Georgia, serif; background-color: var(--bg-white); color: var(--nyt-black); line-height: 1.6; padding-bottom: 50px; }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: var(--bg-main); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; transition: background 0.3s, color 0.3s; line-height: 1.6; overflow-x: hidden; }
-    a { text-decoration: none; color: inherit; }
-    ul { list-style: none; }
-
-    /* HEADER */
-    header { position: sticky; top: 0; z-index: 100; background: var(--nav-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--glass-border); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; }
-    .logo span { color: var(--accent); }
-    .header-actions { display: flex; align-items: center; gap: 1rem; }
-    .theme-toggle { background: transparent; border: 1px solid var(--glass-border); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(5px); }
-    .theme-toggle:hover { border-color: var(--accent); }
-    .mobile-menu-btn { display: none; font-size: 1.5rem; background: none; border: none; color: var(--text-main); cursor: pointer; }
-
-    /* LAYOUT GRID */
-    .layout-grid { display: grid; grid-template-columns: 220px 1fr 300px; gap: 2rem; max-width: 1500px; margin: 0 auto; padding: 2rem 5%; align-items: start; }
-    .sidebar-sticky { position: sticky; top: 90px; }
-    .sidebar-title { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 1.5rem; }
-
-    /* LEFT SIDEBAR (CATEGORIES) */
-    .left-sidebar { transition: transform 0.3s ease; }
-    .category-list { display: flex; flex-direction: column; gap: 0.5rem; }
-    .cat-link { display: block; padding: 0.8rem 1rem; border-radius: 8px; color: var(--text-muted); transition: all 0.2s; font-weight: 500; border: 1px solid transparent; }
-    .cat-link:hover { background: var(--glass-bg); color: var(--accent); border-color: var(--glass-border); transform: translateX(5px); }
-
-    /* GLASSMORPHISM SHARED */
-    .glass-panel { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 16px; box-shadow: var(--glass-shadow); }
-
-    /* MAIN FEED & QUOTE */
-    .main-feed { display: flex; flex-direction: column; gap: 2rem; min-width: 0; }
-    .daily-quote { padding: 2.5rem 2rem; text-align: center; position: relative; overflow: hidden; }
-    .quote-icon { font-size: 5rem; color: var(--accent); opacity: 0.1; position: absolute; top: -20px; left: 10px; font-family: serif; line-height: 1; }
-    .daily-quote blockquote { font-size: 1.25rem; font-weight: 500; font-style: italic; margin-bottom: 1rem; position: relative; z-index: 1; }
-    .daily-quote cite { color: var(--accent); font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
-
-    /* ARTICLE CARDS */
-    .articles-container { display: flex; flex-direction: column; gap: 1.5rem; }
-    .block-link { display: block; transition: transform 0.3s ease, border-color 0.3s ease; overflow: hidden; }
-    .block-link:hover { transform: translateY(-4px); border-color: var(--accent); }
-    .card-img-wrapper { position: relative; height: 240px; }
-    .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-    .badge { position: absolute; top: 1rem; left: 1rem; background: var(--accent); color: #fff; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-    .card-content { padding: 1.5rem; }
-    .card-title { font-size: 1.3rem; margin-bottom: 0.75rem; line-height: 1.4; }
-    .card-snippet { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .card-meta { font-size: 0.85rem; color: var(--text-muted); opacity: 0.8; }
-
-    /* RIGHT SIDEBAR (SHORTS) */
-    .shorts-grid { display: flex; flex-direction: column; gap: 1.25rem; }
-    .short-card { position: relative; height: 350px; border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s, border-color 0.2s; border: 1px solid var(--glass-border); }
-    .short-card:hover { transform: scale(1.02); border-color: var(--accent); }
-    .short-card img { width: 100%; height: 100%; object-fit: cover; }
-    .short-overlay { position: absolute; bottom: 0; left: 0; width: 100%; padding: 2.5rem 1rem 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.95)); display: flex; align-items: flex-end; }
-    .short-title { font-weight: 600; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-
-    /* MODAL */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 1000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
-    .modal-overlay.active { display: flex; opacity: 1; }
-    .modal-glass-content { background: var(--glass-bg); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); width: 90%; max-width: 420px; border-radius: 20px; overflow: hidden; position: relative; transform: scale(0.95); transition: transform 0.3s ease; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); }
-    .modal-overlay.active .modal-glass-content { transform: scale(1); }
-    .modal-close { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.2); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; z-index: 10; display: flex; justify-content: center; align-items: center; transition: background 0.2s; }
-    .modal-close:hover { background: rgba(0,0,0,0.9); }
-    .modal-img { width: 100%; height: 450px; object-fit: cover; }
-    .modal-body { padding: 1.5rem; }
-    .modal-title { font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 700; }
-    .modal-text { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.5; }
-    .btn-share { width: 100%; padding: 0.875rem; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.5rem; transition: background 0.2s, transform 0.1s; }
-    .btn-share:hover { filter: brightness(1.1); transform: translateY(-2px); }
-    .btn-share:active { transform: translateY(0); }
-
-    /* RESPONSIVE DESIGN */
-    @media (max-width: 1100px) {
-        .layout-grid { grid-template-columns: 200px 1fr; }
-        .right-sidebar { display: none; }
-    }
-    @media (max-width: 768px) {
-        .layout-grid { grid-template-columns: 1fr; padding: 1rem 5%; gap: 1.5rem; }
+        /* HEADER & NAVIGATION */
+        header { border-bottom: 4px double var(--nyt-black); padding: 15px 20px; text-align: center; position: relative; max-width: 1400px; margin: 0 auto; }
+        .menu-btn { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 22px; cursor: pointer; background: none; border: none; font-family: 'Inter', sans-serif; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .logo { font-family: 'Cinzel', serif; font-size: 45px; font-weight: 900; letter-spacing: 3px; text-decoration: none; color: var(--nyt-black); display: inline-block; }
         
-        /* Mobile Hamburger & Sidebar Logic */
-        .mobile-menu-btn { display: block; }
-        .left-sidebar { position: fixed; top: 70px; left: -100%; width: 250px; height: calc(100vh - 70px); background: var(--nav-bg); backdrop-filter: blur(15px); border-right: 1px solid var(--glass-border); z-index: 90; padding: 2rem; transition: left 0.3s ease; }
-        .left-sidebar.active { left: 0; }
-        .theme-toggle span { display: none; }
-    }
+        .live-bar { background: #fafafa; border-bottom: 1px solid var(--nyt-border); padding: 8px 20px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; text-align: center; letter-spacing: 0.5px; }
+        .live-dot { color: var(--nyt-red); animation: blink 1.2s infinite; margin-right: 5px; font-size: 16px; vertical-align: middle; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* HAMBURGER SIDEBAR */
+        .sidebar { position: fixed; top: 0; left: -320px; width: 320px; height: 100%; background: var(--bg-white); box-shadow: 5px 0 25px rgba(0,0,0,0.15); z-index: 1000; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px 25px; overflow-y: auto; }
+        .sidebar.active { left: 0; }
+        .sidebar h3 { font-family: 'Inter', sans-serif; border-bottom: 2px solid var(--nyt-black); padding-bottom: 10px; margin-bottom: 20px; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .sidebar .close-btn { float: right; cursor: pointer; font-size: 22px; font-weight: 400; }
+        .sidebar a { display: block; padding: 12px 0; color: var(--nyt-black); text-decoration: none; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 500; border-bottom: 1px solid #f0f0f0; transition: 0.2s; }
+        .sidebar a:hover { color: var(--nyt-red); padding-left: 5px; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 999; backdrop-filter: blur(2px); }
+        .overlay.active { display: block; }
+
+        /* TWO-COLUMN LAYOUT */
+        .main-container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 380px; gap: 40px; padding: 30px 20px; }
+
+        /* LEFT COLUMN (MAIN ARTICLES) */
+        .news-section { border-right: 1px solid var(--nyt-border); padding-right: 30px; }
+        .section-header { font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 700; border-bottom: 2px solid var(--nyt-black); padding-bottom: 5px; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1.5px; }
+        
+        /* ARTICLE CARD */
+        .post-card { border-bottom: 1px solid var(--nyt-border); padding-bottom: 30px; margin-bottom: 30px; display: flex; flex-direction: column; gap: 15px; }
+        .post-card:last-child { border-bottom: none; }
+        .post-card .meta { font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; color: var(--nyt-red); font-weight: 700; letter-spacing: 1px; }
+        .post-card h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 32px; font-weight: 800; line-height: 1.2; color: var(--nyt-black); text-decoration: none; }
+        .post-card h2 a { color: inherit; text-decoration: none; }
+        .post-card h2 a:hover { color: #333; }
+        .post-card img { width: 100%; max-height: 450px; object-fit: cover; border: 1px solid #eee; margin: 5px 0; }
+        .post-card p { font-size: 16px; color: #222; text-align: justify; line-height: 1.6; }
+
+        /* RIGHT COLUMN (GOOGLE SHORTS) */
+        .shorts-section { position: relative; }
+        .shorts-sticky { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 20px; max-height: 90vh; overflow-y: auto; padding-right: 5px; }
+        /* Hide scrollbar for shorts container */
+        .shorts-sticky::-webkit-scrollbar { width: 4px; }
+        .shorts-sticky::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        
+        /* SHORTS CARD */
+        .short-card { background: #fdfdfd; border: 1px solid var(--nyt-border); border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 12px; border-top: 4px solid var(--nyt-red); box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        .short-card .short-tag { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; background: var(--nyt-red); color: white; padding: 3px 8px; border-radius: 3px; width: max-content; text-transform: uppercase; letter-spacing: 0.5px; }
+        .short-card h4 { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; line-height: 1.3; color: var(--nyt-black); }
+        .short-card img { width: 100%; height: 200px; object-fit: cover; border-radius: 4px; }
+        .short-card p { font-family: 'Inter', sans-serif; font-size: 13.5px; color: #444; line-height: 1.5; text-align: justify; }
+
+        /* RESPONSIVE DESIGN (MOBILE) */
+        @media (max-width: 950px) {
+            .main-container { grid-template-columns: 1fr; gap: 40px; }
+            .news-section { border-right: none; padding-right: 0; }
+            .logo { font-size: 32px; }
+            .menu-btn { font-size: 18px; }
+        }
     </style>
 </head>
 <body>
+
+    <!-- SIDEBAR NAVIGATION & OVERLAY -->
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="sidebar" id="sidebar">
+        <h3>Categories <span class="close-btn" onclick="toggleMenu()">✕</span></h3>
+        <a href="#" onclick="toggleMenu()">🏠 Home</a>
+        <a href="#" onclick="toggleMenu()">⚽ Sports</a>
+        <a href="#" onclick="toggleMenu()">🕶️ Lifestyle</a>
+        <a href="#" onclick="toggleMenu()">📈 Stock News</a>
+        <a href="#" onclick="toggleMenu()">🍳 Cooking</a>
+        <a href="#" onclick="toggleMenu()">🩺 Health</a>
+        <a href="#" onclick="toggleMenu()">🎬 Film Industry</a>
+        <a href="#" onclick="toggleMenu()">🍿 Movie Review</a>
+        <a href="#" onclick="toggleMenu()">⚔️ Anime Latest</a>
+        <a href="#" onclick="toggleMenu()">💻 Technology</a>
+        <a href="#" onclick="toggleMenu()">💼 Business & Startups</a>
+        <a href="#" onclick="toggleMenu()">🌍 Global Facts</a>
+    </div>
+
+    <!-- MAIN HEADER -->
     <header>
-        <div class="logo">Info<span>vex</span></div>
-        <div class="header-actions">
-            <button class="theme-toggle" id="themeToggle">☀️ <span style="font-family:inherit;font-size:0.9rem">Light Mode</span></button>
-            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
-        </div>
+        <button class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
+        <a href="#" class="logo">INFOVEX</a>
     </header>
 
-    <div class="layout-grid">
-        
-    <aside class="left-sidebar" id="leftSidebar">
-        <div class="sidebar-sticky">
-            <h3 class="sidebar-title">Categories</h3>
-            <ul class="category-list">
-                <li><a href="#tech" class="cat-link">Tech</a></li><li><a href="#sports" class="cat-link">Sports</a></li><li><a href="#facts" class="cat-link">Facts</a></li><li><a href="#film" class="cat-link">Film</a></li><li><a href="#health" class="cat-link">Health</a></li>
-            </ul>
-        </div>
-    </aside>
-    
-        
-    <main class="main-feed">
-        
-    <div class="daily-quote glass-panel">
-        <span class="quote-icon">“</span>
-        <blockquote>The only way to do great work is to love what you do.</blockquote>
-        <cite>— Steve Jobs</cite>
-    </div>
-    
-        <div class="articles-container">
-            
-        <a href="#/article/a001" class="article-card glass-panel block-link">
-            <div class="card-img-wrapper">
-                <img src="https://source.unsplash.com/random/800x600?quantum,tech,ai" alt="Quantum Computing Breakthrough Promises Faster AI" loading="lazy">
-                <span class="badge">Tech</span>
-            </div>
-            <div class="card-content">
-                <h2 class="card-title">Quantum Computing Breakthrough Promises Faster AI</h2>
-                <p class="card-snippet">Researchers at Infovex Labs have announced a significant leap in quantum computing, potentially revolutionizing AI processing speeds. This advancement could unlock unprecedented capabilities in data analysis and machine learning.</p>
-                <div class="card-meta">Published: 2024-07-28</div>
-            </div>
-        </a>
-        
-        <a href="#/article/a002" class="article-card glass-panel block-link">
-            <div class="card-img-wrapper">
-                <img src="https://source.unsplash.com/random/800x600?marathon,runner,sports" alt="Local Hero Wins Marathon, Breaks Course Record" loading="lazy">
-                <span class="badge">Sports</span>
-            </div>
-            <div class="card-content">
-                <h2 class="card-title">Local Hero Wins Marathon, Breaks Course Record</h2>
-                <p class="card-snippet">Sarah Jenkins, a local athlete, triumphed in the annual city marathon, setting a new course record by over two minutes. Her dedication and rigorous training paid off in a spectacular performance.</p>
-                <div class="card-meta">Published: 2024-07-27</div>
-            </div>
-        </a>
-        
-        <a href="#/article/a003" class="article-card glass-panel block-link">
-            <div class="card-img-wrapper">
-                <img src="https://source.unsplash.com/random/800x600?sleep,health,brain" alt="New Study Links Sleep Quality to Cognitive Function" loading="lazy">
-                <span class="badge">Health</span>
-            </div>
-            <div class="card-content">
-                <h2 class="card-title">New Study Links Sleep Quality to Cognitive Function</h2>
-                <p class="card-snippet">A comprehensive study published by the National Health Institute reveals a strong correlation between consistent sleep patterns and improved cognitive function. Experts recommend prioritizing sleep for overall brain health.</p>
-                <div class="card-meta">Published: 2024-07-26</div>
-            </div>
-        </a>
-        
-        <a href="#/article/a004" class="article-card glass-panel block-link">
-            <div class="card-img-wrapper">
-                <img src="https://source.unsplash.com/random/800x600?movie,scifi,film" alt="'Cosmic Voyage' Dominates Box Office in Opening Weekend" loading="lazy">
-                <span class="badge">Film</span>
-            </div>
-            <div class="card-content">
-                <h2 class="card-title">'Cosmic Voyage' Dominates Box Office in Opening Weekend</h2>
-                <p class="card-snippet">The highly anticipated sci-fi epic 'Cosmic Voyage' has taken the box office by storm, raking in record numbers globally. Critics praise its stunning visuals and compelling storyline, calling it a must-see.</p>
-                <div class="card-meta">Published: 2024-07-25</div>
-            </div>
-        </a>
-        
-        <a href="#/article/a005" class="article-card glass-panel block-link">
-            <div class="card-img-wrapper">
-                <img src="https://source.unsplash.com/random/800x600?archaeology,egypt,history" alt="Uncovering Ancient Civilizations: New Discoveries in Egypt" loading="lazy">
-                <span class="badge">Facts</span>
-            </div>
-            <div class="card-content">
-                <h2 class="card-title">Uncovering Ancient Civilizations: New Discoveries in Egypt</h2>
-                <p class="card-snippet">Archaeologists in Egypt have unearthed a previously unknown burial site, offering new insights into ancient Egyptian rituals and daily life. The findings could rewrite parts of historical understanding.</p>
-                <div class="card-meta">Published: 2024-07-24</div>
-            </div>
-        </a>
-        
-        <a href="#/article/a006" class="article-card glass-panel block-link">
-            <div class="card-img-wrapper">
-                <img src="https://source.unsplash.com/random/800x600?ai,education,learning" alt="The Rise of AI in Personalized Learning Platforms" loading="lazy">
-                <span class="badge">Tech</span>
-            </div>
-            <div class="card-content">
-                <h2 class="card-title">The Rise of AI in Personalized Learning Platforms</h2>
-                <p class="card-snippet">Artificial intelligence is transforming education by creating adaptive learning experiences tailored to individual student needs. This technology promises to make learning more efficient and engaging for everyone.</p>
-                <div class="card-meta">Published: 2024-07-23</div>
-            </div>
-        </a>
-        
-        <a href="#/article/a007" class="article-card glass-panel block-link">
-            <div class="card-img-wrapper">
-                <img src="https://source.unsplash.com/random/800x600?basketball,sports,win" alt="Basketball Team Secures Playoff Spot with Thrilling Win" loading="lazy">
-                <span class="badge">Sports</span>
-            </div>
-            <div class="card-content">
-                <h2 class="card-title">Basketball Team Secures Playoff Spot with Thrilling Win</h2>
-                <p class="card-snippet">The city's basketball team clinched a playoff berth after a nail-biting overtime victory against their arch-rivals last night. Fans celebrated late into the evening, anticipating a strong postseason run.</p>
-                <div class="card-meta">Published: 2024-07-22</div>
-            </div>
-        </a>
-        
-        <a href="#/article/a008" class="article-card glass-panel block-link">
-            <div class="card-img-wrapper">
-                <img src="https://source.unsplash.com/random/800x600?guthealth,wellness,diet" alt="Understanding Gut Health: A Key to Overall Wellness" loading="lazy">
-                <span class="badge">Health</span>
-            </div>
-            <div class="card-content">
-                <h2 class="card-title">Understanding Gut Health: A Key to Overall Wellness</h2>
-                <p class="card-snippet">Recent research highlights the critical role of gut microbiome in influencing mood, immunity, and chronic diseases. Maintaining a healthy gut through diet and lifestyle is increasingly seen as vital for overall wellness.</p>
-                <div class="card-meta">Published: 2024-07-21</div>
-            </div>
-        </a>
-        
-        <a href="#/article/a009" class="article-card glass-panel block-link">
-            <div class="card-img-wrapper">
-                <img src="https://source.unsplash.com/random/800x600?indiefilm,festival,cinema" alt="Independent Film Festival Showcases Diverse Talent" loading="lazy">
-                <span class="badge">Film</span>
-            </div>
-            <div class="card-content">
-                <h2 class="card-title">Independent Film Festival Showcases Diverse Talent</h2>
-                <p class="card-snippet">The annual Independent Film Festival concluded with critical acclaim for its diverse selection of films and emerging filmmakers. The event provided a platform for unique storytelling and cinematic innovation.</p>
-                <div class="card-meta">Published: 2024-07-20</div>
-            </div>
-        </a>
-        
-        <a href="#/article/a010" class="article-card glass-panel block-link">
-            <div class="card-img-wrapper">
-                <img src="https://source.unsplash.com/random/800x600?darkmatter,space,universe" alt="The Mystery of Dark Matter: New Evidence Emerges" loading="lazy">
-                <span class="badge">Facts</span>
-            </div>
-            <div class="card-content">
-                <h2 class="card-title">The Mystery of Dark Matter: New Evidence Emerges</h2>
-                <p class="card-snippet">Astrophysicists have detected new signals that could provide crucial evidence in the long-standing mystery of dark matter. These findings could reshape our understanding of the universe's composition.</p>
-                <div class="card-meta">Published: 2024-07-19</div>
-            </div>
-        </a>
-        
-        </div>
-    </main>
-    
-        
-    <aside class="right-sidebar">
-        <div class="sidebar-sticky">
-            <h3 class="sidebar-title">Flash Shorts</h3>
-            <div class="shorts-grid">
-                
-        <div class="short-card" onclick="openShortModal('5G Rollout Expands', 'Major carriers announce accelerated 5G network expansion plans across urban and rural areas. Expect faster downloads and more reliable connections soon!', 'https://via.placeholder.com/300x450?text=5G+Network')">
-            <img src="https://via.placeholder.com/300x450?text=5G+Network" alt="5G Rollout Expands" loading="lazy">
-            <div class="short-overlay">
-                <span class="short-title">5G Rollout Expands</span>
-            </div>
-        </div>
-        
-        <div class="short-card" onclick="openShortModal('Olympic Qualifiers Update', 'Several athletes have officially qualified for the upcoming Olympic Games. Excitement builds as the global event draws closer.', 'https://via.placeholder.com/300x450?text=Olympic+News')">
-            <img src="https://via.placeholder.com/300x450?text=Olympic+News" alt="Olympic Qualifiers Update" loading="lazy">
-            <div class="short-overlay">
-                <span class="short-title">Olympic Qualifiers Update</span>
-            </div>
-        </div>
-        
-        <div class="short-card" onclick="openShortModal('Mindfulness for Stress', 'A quick guide to incorporating mindfulness into your daily routine to combat stress and improve mental well-being.', 'https://via.placeholder.com/300x450?text=Mindfulness+Tip')">
-            <img src="https://via.placeholder.com/300x450?text=Mindfulness+Tip" alt="Mindfulness for Stress" loading="lazy">
-            <div class="short-overlay">
-                <span class="short-title">Mindfulness for Stress</span>
-            </div>
-        </div>
-        
-        <div class="short-card" onclick="openShortModal('New Streaming Series', 'A thrilling new drama series just dropped on all major streaming platforms. Get ready for binge-watching!', 'https://via.placeholder.com/300x450?text=New+Series')">
-            <img src="https://via.placeholder.com/300x450?text=New+Series" alt="New Streaming Series" loading="lazy">
-            <div class="short-overlay">
-                <span class="short-title">New Streaming Series</span>
-            </div>
-        </div>
-        
-        <div class="short-card" onclick="openShortModal('Historic Artifact Found', 'A rare 15th-century artifact was discovered during urban excavation, offering a glimpse into medieval life.', 'https://via.placeholder.com/300x450?text=Historic+Find')">
-            <img src="https://via.placeholder.com/300x450?text=Historic+Find" alt="Historic Artifact Found" loading="lazy">
-            <div class="short-overlay">
-                <span class="short-title">Historic Artifact Found</span>
-            </div>
-        </div>
-        
-            </div>
-        </div>
-    </aside>
-    
+    <!-- LIVE MARQUEE BAR -->
+    <div class="live-bar">
+        <span class="live-dot">●</span> <b>LIVE UPDATES:</b> INFOVEX AI Editorial Desk is active. Refreshing viral content across all categories.
     </div>
 
-    
-    <div class="modal-overlay" id="shortModal" onclick="closeShortModal(event)">
-        <div class="modal-glass-content" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeShortModal(event, true)">×</button>
-            <img src="" alt="Short Content" class="modal-img" id="modalImg" loading="lazy">
-            <div class="modal-body">
-                <h3 class="modal-title" id="modalTitle"></h3>
-                <p class="modal-text" id="modalContent"></p>
-                <button class="btn-share" onclick="shareShort()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-                    Share Short
-                </button>
+    <!-- CONTENT GRID -->
+    <div class="main-container">
+        
+        <!-- LEFT COLUMN: MAIN ARTICLES -->
+        <main class="news-section">
+            <div class="section-header">Latest Editorial Feed</div>
+            <div id="posts-container">
+                <!-- AI Bot will insert full articles here -->
             </div>
-        </div>
-    </div>
-    
+        </main>
 
+        <!-- RIGHT COLUMN: GOOGLE SHORTS -->
+        <aside class="shorts-section">
+            <div class="section-header">⚡ Google Shorts</div>
+            <div class="shorts-sticky" id="shorts-container">
+                <!-- AI Bot will insert dynamic shorts here -->
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- SCRIPTS -->
     <script>
-    // Theme Toggle Logic
-    const themeBtn = document.getElementById('themeToggle');
-    const root = document.documentElement;
-    
-    if (localStorage.getItem('theme') === 'light') {
-        root.setAttribute('data-theme', 'light');
-        themeBtn.innerHTML = '🌙';
-    }
-
-    themeBtn.addEventListener('click', () => {
-        if (root.getAttribute('data-theme') === 'light') {
-            root.removeAttribute('data-theme');
-            localStorage.setItem('theme', 'dark');
-            themeBtn.innerHTML = '☀️ <span style="font-family:inherit;font-size:0.9rem">Light Mode</span>';
-        } else {
-            root.setAttribute('data-theme', 'light');
-            localStorage.setItem('theme', 'light');
-            themeBtn.innerHTML = '🌙 <span style="font-family:inherit;font-size:0.9rem">Dark Mode</span>';
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
         }
-    });
-
-    // Mobile Menu Logic
-    const mobileBtn = document.getElementById('mobileMenuBtn');
-    const sidebar = document.getElementById('leftSidebar');
-    
-    mobileBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
-        mobileBtn.innerHTML = sidebar.classList.contains('active') ? '✕' : '☰';
-    });
-
-    // Shorts Modal & Native Share Logic
-    const modal = document.getElementById('shortModal');
-    const modalImg = document.getElementById('modalImg');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalContent = document.getElementById('modalContent');
-    let currentShareData = {};
-
-    function openShortModal(title, content, imgUrl) {
-        modalImg.src = imgUrl;
-        modalTitle.textContent = title;
-        modalContent.textContent = content;
-        
-        currentShareData = {
-            title: 'Infovex Shorts: ' + title,
-            text: content,
-            url: window.location.href 
-        };
-
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeShortModal(event, force = false) {
-        if (force || event.target === modal) {
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-    }
-
-    async function shareShort() {
-        if (navigator.share) {
-            try {
-                await navigator.share(currentShareData);
-            } catch (err) {
-                console.log('Share canceled or failed:', err);
-            }
-        } else {
-            alert("Web Share API is not supported in this browser. Link ready to be copied manually.");
-        }
-    }
     </script>
 </body>
 </html>
