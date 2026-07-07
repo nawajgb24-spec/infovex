@@ -19,7 +19,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Lora', Georgia, serif; background-color: var(--bg-white); color: var(--nyt-black); line-height: 1.6; padding-bottom: 50px; }
 
-        /* HEADER & NAVIGATION */
         header { border-bottom: 4px double var(--nyt-black); padding: 15px 20px; text-align: center; position: relative; max-width: 1400px; margin: 0 auto; }
         .menu-btn { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 22px; cursor: pointer; background: none; border: none; font-family: 'Inter', sans-serif; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         .logo { font-family: 'Cinzel', serif; font-size: 45px; font-weight: 900; letter-spacing: 3px; text-decoration: none; color: var(--nyt-black); display: inline-block; }
@@ -28,7 +27,6 @@
         .live-dot { color: var(--nyt-red); animation: blink 1.2s infinite; margin-right: 5px; font-size: 16px; vertical-align: middle; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* HAMBURGER SIDEBAR */
         .sidebar { position: fixed; top: 0; left: -320px; width: 320px; height: 100%; background: var(--bg-white); box-shadow: 5px 0 25px rgba(0,0,0,0.15); z-index: 1000; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px 25px; overflow-y: auto; }
         .sidebar.active { left: 0; }
         .sidebar h3 { font-family: 'Inter', sans-serif; border-bottom: 2px solid var(--nyt-black); padding-bottom: 10px; margin-bottom: 20px; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
@@ -38,53 +36,45 @@
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 999; backdrop-filter: blur(2px); }
         .overlay.active { display: block; }
 
-        /* TWO-COLUMN LAYOUT */
         .main-container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 380px; gap: 40px; padding: 30px 20px; }
-
-        /* LEFT COLUMN (MAIN ARTICLES) */
         .news-section { border-right: 1px solid var(--nyt-border); padding-right: 30px; }
         .section-header { font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 700; border-bottom: 2px solid var(--nyt-black); padding-bottom: 5px; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1.5px; }
         
-        /* ARTICLE CARD */
-        .post-card { border-bottom: 1px solid var(--nyt-border); padding-bottom: 30px; margin-bottom: 30px; display: flex; flex-direction: column; gap: 15px; cursor: pointer; transition: 0.2s; }
+        /* POST CARDS */
+        .post-card { border-bottom: 1px solid var(--nyt-border); padding-bottom: 30px; margin-bottom: 30px; display: flex; flex-direction: column; gap: 15px; cursor: pointer; }
         .post-card:last-child { border-bottom: none; }
-        .post-card:hover h2 { color: var(--nyt-red); }
         .post-card .meta { font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; color: var(--nyt-red); font-weight: 700; letter-spacing: 1px; }
-        .post-card h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 32px; font-weight: 800; line-height: 1.2; color: var(--nyt-black); transition: 0.2s; }
-        .post-card p { font-size: 16px; color: #222; text-align: justify; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .post-card h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 30px; font-weight: 800; line-height: 1.2; color: var(--nyt-black); }
+        .post-card:hover h2 { color: var(--nyt-red); }
+        .post-card .full-story { display: none; } /* Hidden full story container */
+        .post-card .preview-text { font-size: 16px; color: #444; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-align: justify; }
 
-        /* RIGHT COLUMN (GOOGLE SHORTS) */
         .shorts-section { position: relative; }
         .shorts-sticky { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 20px; max-height: 90vh; overflow-y: auto; padding-right: 5px; }
         .shorts-sticky::-webkit-scrollbar { width: 4px; }
         .shorts-sticky::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
         
-        /* SHORTS CARD */
-        .short-card { background: #fdfdfd; border: 1px solid var(--nyt-border); border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 12px; border-top: 4px solid var(--nyt-red); box-shadow: 0 4px 12px rgba(0,0,0,0.02); cursor: pointer; transition: 0.2s; }
-        .short-card:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .short-card { background: #fdfdfd; border: 1px solid var(--nyt-border); border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 12px; border-top: 4px solid var(--nyt-red); box-shadow: 0 4px 12px rgba(0,0,0,0.02); cursor: pointer; }
         .short-card .short-tag { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; background: var(--nyt-red); color: white; padding: 3px 8px; border-radius: 3px; width: max-content; text-transform: uppercase; letter-spacing: 0.5px; }
         .short-card h4 { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; line-height: 1.3; color: var(--nyt-black); }
         .short-card p { font-family: 'Inter', sans-serif; font-size: 13.5px; color: #444; line-height: 1.5; text-align: justify; }
 
-        /* PREMIUM ARTICLE FULL VIEW MODAL */
+        /* MODAL POPUP DISPLAY */
         .article-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; backdrop-filter: blur(4px); justify-content: center; align-items: center; padding: 20px; }
         .article-modal.active { display: flex; }
-        .modal-content { background: var(--bg-white); width: 100%; max-width: 850px; max-height: 85vh; overflow-y: auto; border-radius: 8px; padding: 40px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .modal-close { position: absolute; top: 20px; right: 25px; font-size: 28px; cursor: pointer; color: var(--nyt-gray); transition: 0.2s; }
+        .modal-content { background: var(--bg-white); width: 100%; max-width: 800px; max-height: 85vh; overflow-y: auto; border-radius: 6px; padding: 40px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.25); animation: slideUp 0.25s ease; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-close { position: absolute; top: 20px; right: 25px; font-size: 28px; cursor: pointer; color: var(--nyt-gray); }
         .modal-close:hover { color: var(--nyt-black); }
         .modal-body .meta { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--nyt-red); font-weight: 700; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
-        .modal-body h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 36px; font-weight: 800; line-height: 1.2; margin-bottom: 25px; }
+        .modal-body h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 34px; font-weight: 800; line-height: 1.2; margin-bottom: 25px; border-bottom: 1px solid var(--nyt-border); padding-bottom: 15px; }
         .modal-body p { font-size: 17.5px; color: #111; text-align: justify; line-height: 1.7; margin-bottom: 20px; }
 
-        /* RESPONSIVE DESIGN (MOBILE) */
         @media (max-width: 950px) {
             .main-container { grid-template-columns: 1fr; gap: 40px; }
             .news-section { border-right: none; padding-right: 0; }
             .logo { font-size: 32px; }
-            .menu-btn { font-size: 18px; }
             .modal-content { padding: 25px; }
-            .modal-body h2 { font-size: 28px; }
         }
     </style>
 </head>
@@ -113,40 +103,25 @@
     </header>
 
     <div class="live-bar">
-        <span class="live-dot">●</span> <b>LIVE UPDATES:</b> INFOVEX AI Editorial Desk is active. Refreshing viral content across all categories.
+        <span class="live-dot">●</span> <b>LIVE UPDATES:</b> INFOVEX AI Editorial Desk active. Continuous global streams online.
     </div>
 
     <div class="main-container">
-        
         <main class="news-section">
             <div class="section-header">Latest Editorial Feed</div>
-            <div id="posts-container">
-
-    <div class="post-card">
-        <div class="meta">July 07, 2026 • 04:54 PM • Sports</div>
-        <h2>Market & Global Dynamic System Breakthroughs — Key Developments Revealed</h2><p>Major dynamic changes are unfolding rapidly globally in the Sports sector. Experts suggest close monitoring of these latest structural updates moving forward.</p><p>As the situation develops further, additional operational metrics will define the next cycle of industry progress.</p>
-    </div>
-    </div>
+            <div id="posts-container"></div>
         </main>
 
         <aside class="shorts-section">
             <div class="section-header">⚡ Google Shorts</div>
-            <div class="shorts-sticky" id="shorts-container">
-
-    <div class="short-card">
-        <div class="short-tag">Sports</div>
-        <h4>Quick Update on Market & Global Dynamic System Breakthroughs</h4><p>Latest updates regarding Market & Global Dynamic System Breakthroughs under Sports section are currently processing live across media networks.</p>
-    </div>
-    </div>
+            <div class="shorts-sticky" id="shorts-container"></div>
         </aside>
-
     </div>
 
     <div class="article-modal" id="articleModal" onclick="closeArticle(event)">
         <div class="modal-content">
             <span class="modal-close" onclick="closeArticle(event, true)">✕</span>
-            <div class="modal-body" id="modalBody">
-                </div>
+            <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
 
@@ -156,13 +131,18 @@
             document.getElementById('overlay').classList.toggle('active');
         }
 
-        // Article Content Click View Mechanism
         document.getElementById('posts-container').addEventListener('click', function(e) {
             let card = e.target.closest('.post-card');
             if(card) {
-                let content = card.innerHTML;
-                // Full paragraph support recovery (unclamping text)
-                document.getElementById('modalBody').innerHTML = content;
+                let meta = card.querySelector('.meta').innerText;
+                let title = card.querySelector('h2').innerText;
+                let fullStory = card.querySelector('.full-story').innerHTML;
+                
+                document.getElementById('modalBody').innerHTML = `
+                    <div class="meta">${meta}</div>
+                    <h2>${title}</h2>
+                    <div class="story-content">${fullStory}</div>
+                `;
                 document.getElementById('articleModal').classList.add('active');
             }
         });
@@ -177,7 +157,7 @@
                 document.getElementById('modalBody').innerHTML = `
                     <div class="meta">⚡ Google Short • ${tag}</div>
                     <h2>${title}</h2>
-                    <p style="font-size:19px; line-height:1.8; color:#333;">${body}</p>
+                    <p style="font-size:18.5px; line-height:1.7; color:#222;">${body}</p>
                 `;
                 document.getElementById('articleModal').classList.add('active');
             }
