@@ -2,7 +2,7 @@ import os
 import random
 import datetime
 import requests
-from pytrends.request import TrendReq
+import xml.etree.ElementTree as ET
 from github import Github
 
 # Secret vault se keys access karna
@@ -20,31 +20,37 @@ CATEGORIES = [
 ]
 
 def get_trending_topic(selected_category):
-    print(f"🔄 Scanning viral feeds for category: {selected_category}...")
+    print(f"🔄 Fetching latest live news for category: {selected_category}...")
     try:
-        pytrends = TrendReq(hl='en-US', tz=330)
-        # Global or India real-time trending list search
-        trends_df = pytrends.realtime_trending_searches(pn='IN')
-        for index, row in trends_df.iterrows():
-            title = row['title']
-            # Dynamic filtering based on topic keywords
-            return title
-    except Exception:
-        # Fallback random viral baseline generator to ensure robot never fails
-        backups = {
-            "Sports": "India Cricket Team Match Analysis and Upcoming Tournament Updates",
-            "Stock News": "Stock Market Highlights Today Nifty Sensex Top Gainers and Losers",
-            "Technology": "Latest AI Breakthroughs and New Smartphone Launches This Week",
-            "Anime Latest": "Trending Anime Episodes Streaming Updates and Manga Releases",
-            "Health": "Top Wellness Habits and Balanced Diet Guidelines for Longevity",
-            "Cooking": "Viral Food Recipes and New Global Fusion Culinary Trends",
-            "Lifestyle": "Modern Fashion Trends and Minimalist Living Design Tips",
-            "Film Industry": "Box Office Collection Records and Upcoming Cinema Teasers",
-            "Movie Review": "Honest Critique of the Latest Trending Over-The-Top Web Series Release",
-            "Business & Startups": "Innovative Startup Models Changing Indian Ecosystem Economy",
-            "Global Facts": "Deep Mind Mysteries and Incredible Historical Unexplained Facts"
-        }
-        return backups.get(selected_category, "Global Trending Breakthrough Updates")
+        # Google News India RSS Feed - Ekdum genuine aur unstoppable source
+        url = "https://news.google.com/rss?hl=en-IN&gl=IN&ceid=IN:en"
+        response = requests.get(url, timeout=10)
+        root = ET.fromstring(response.content)
+        
+        # Kisi bhi ek fresh top trending headline ko uthana
+        titles = [item.find('title').text for item in root.findall('.//item')]
+        if titles:
+            # AI ke liye chota aur clean topic nikalna
+            clean_title = random.choice(titles[:15]).split(" - ")[0]
+            return clean_title
+    except Exception as e:
+        print(f"⚠️ RSS Fetch error, using category smart baseline: {e}")
+    
+    # Baseline fallback taaki code kabhi crash na ho
+    backups = {
+        "Sports": "India Cricket Team Match Strategy and Upcoming Tournament Updates",
+        "Stock News": "Stock Market Highlights Today Nifty Sensex Top Gainers and Losers",
+        "Technology": "Latest AI Breakthroughs and New Smartphone Launches This Week",
+        "Anime Latest": "Trending Anime Episodes Streaming Updates and Manga Releases",
+        "Health": "Top Wellness Habits and Balanced Diet Guidelines for Longevity",
+        "Cooking": "Viral Food Recipes and New Global Fusion Culinary Trends",
+        "Lifestyle": "Modern Fashion Trends and Minimalist Living Design Tips",
+        "Film Industry": "Box Office Collection Records and Upcoming Cinema Teasers",
+        "Movie Review": "Honest Critique of the Latest Trending Over-The-Top Web Series Release",
+        "Business & Startups": "Innovative Startup Models Changing Indian Ecosystem Economy",
+        "Global Facts": "Deep Mind Mysteries and Incredible Historical Unexplained Facts"
+    }
+    return backups.get(selected_category, "Global Trending Breakthrough Updates")
 
 def generate_dual_content(topic, category):
     print(f"🧠 Gemini AI generating unique News Article + Google Short for: '{topic}'...")
@@ -78,11 +84,8 @@ def generate_dual_content(topic, category):
     
     try:
         raw_text = res_json['candidates'][0]['content']['parts'][0]['text']
-        
-        # Clean markdown if generated
         raw_text = raw_text.replace("```html", "").replace("```", "").strip()
         
-        # Parse output safely
         article = raw_text.split("[START_ARTICLE]")[1].split("[END_ARTICLE]")[0].strip()
         short = raw_text.split("[START_SHORT]")[1].split("[END_SHORT]")[0].strip()
         
@@ -90,20 +93,13 @@ def generate_dual_content(topic, category):
     except Exception:
         raise Exception(f"AI Generation Failed or Parser Mismatch. Response: {res_json}")
 
-def get_matching_image_url(query):
-    # Dynamic generation safe from copyright strikes via standard dynamic canvas mapping
-    formatted_query = query.replace(" ", "+")
-    return f"https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80" # Base reliable journalistic backup image anchor
-
 def update_platform(article_body, short_body, category):
     print("📤 Injecting data streams safely into index.html placeholders...")
     repo = g.get_repo(GITHUB_REPO)
     contents = repo.get_contents("index.html", ref="main")
     html_code = contents.decoded_content.decode("utf-8")
     
-    # Process dynamic items with proper timestamp
     timestamp = datetime.datetime.now().strftime("%B %d, %Y • %I:%M %p")
-    img_url = get_matching_image_url(category)
     
     # 1. Structure the full post
     full_post_template = f"""
@@ -121,7 +117,6 @@ def update_platform(article_body, short_body, category):
     </div>
     """
     
-    # Injection Logic
     article_placeholder = 'id="posts-container">'
     short_placeholder = 'id="shorts-container">'
     
@@ -142,7 +137,6 @@ def update_platform(article_body, short_body, category):
 
 if __name__ == "__main__":
     try:
-        # Pick a random category to balance weekly content automatically
         selected_category = random.choice(CATEGORIES)
         trending_topic = get_trending_topic(selected_category)
         
