@@ -2,9 +2,9 @@ name: AI Auto Blogger
 
 on:
   schedule:
-    # Har 2 ghante me robot automatic chalega
+    # Har 2 ghante me robot automatic piche se chalega (Autopilot Active)
     - cron: '0 */2 * * *'
-  workflow_dispatch: # Manually chalane ke liye
+  workflow_dispatch: # Isse manual button bhi chalu rahega emergency ke liye
 
 jobs:
   build:
