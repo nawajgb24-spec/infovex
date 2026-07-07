@@ -9,7 +9,8 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 GITHUB_REPO = os.getenv("GITHUB_REPOSITORY")
 
-g = Github(GITHUB_TOKEN)
+# 🌟 Updated to use auth parameter to remove deprecation warning
+g = Github(auth=Github.Auth.Token(GITHUB_TOKEN)) if GITHUB_TOKEN else Github()
 
 CATEGORIES = [
     "Sports", "Lifestyle", "Stock News", "Cooking", "Health", 
@@ -43,8 +44,6 @@ def get_trending_topic(selected_category):
     return "Market & Global Dynamic System Breakthroughs"
 
 def generate_dual_content(topic, category):
-    img_style = "width:100% !important; max-width:100% !important; display:block; max-height:450px; object-fit:cover; margin:25px 0; border-radius:4px; border:1px solid #eee;"
-    
     selected_pics = random.sample(GLOBAL_STABLE_IMAGES, min(len(GLOBAL_STABLE_IMAGES), 3))
     img1 = f'<img src="{selected_pics[0]}" alt="Breaking Header">'
     img2 = f'<img src="{selected_pics[1]}" alt="Core Analysis">'
@@ -69,11 +68,6 @@ def generate_dual_content(topic, category):
     
     prompt = f"""
     Act as a senior investigative journalist writing for a premium mainstream newspaper. Write a natural, human-written style news analysis report for INFOVEX about '{topic}' under the category '{category}'.
-    
-    STRICT ANTI-AI RULES:
-    1. NEVER use cliché AI transitions like: furthermore, moreover, in conclusion, testament, delve, rapidly evolving, landscape, crucial.
-    2. Write with variable sentence lengths. Start straight with the breaking news hook.
-    3. Let the weight of the topic decide the length naturally.
     
     STRUCTURE REQUIREMENT:
     - Write exactly 4 fully-developed human paragraphs.
@@ -145,26 +139,23 @@ def update_platform(article_body, short_body, category, topic):
     </div>
     """
     
-    # 🌟 SMART FALLBACK REPLACEMENT ENGINE (Ye ab kabhi fail nahi hoga!)
-    updated = False
-    
-    # Try custom comments first
+    # 🌟 FIXED CRASH-PROOF STRING INJECTION LOGIC
     if '' in html_code and '' in html_code:
         html_code = html_code.replace('', f'\n{full_post_template}')
         html_code = html_code.replace('', f'\n{short_template}')
-        updated = True
-    # Fallback to standard div containers if comments are missing
+        
+        repo.update_file(contents.path, f"AI Desk Update: Stable Append {category}", html_code, contents.sha, branch="main")
+        update_sitemap(repo)
+        print("🎉 Platform updated and safely appended via explicit comments!")
     elif '<div id="posts-container">' in html_code and '<div class="shorts-sticky" id="shorts-container">' in html_code:
         html_code = html_code.replace('<div id="posts-container">', f'<div id="posts-container">\n{full_post_template}')
         html_code = html_code.replace('<div class="shorts-sticky" id="shorts-container">', f'<div class="shorts-sticky" id="shorts-container">\n{short_template}')
-        updated = True
         
-    if updated:
-        repo.update_file(contents.path, f"AI Desk Update: Append Article {category}", html_code, contents.sha, branch="main")
+        repo.update_file(contents.path, f"AI Desk Update: Container Append {category}", html_code, contents.sha, branch="main")
         update_sitemap(repo)
-        print("🎉 Platform updated and safely appended!")
+        print("🎉 Platform updated and safely appended via fallback containers!")
     else:
-        print("❌ HTML matching tag error.")
+        print("❌ HTML structure tags not found. Update aborted.")
 
 if __name__ == "__main__":
     selected_category = random.choice(CATEGORIES)
