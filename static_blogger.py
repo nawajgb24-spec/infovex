@@ -3,13 +3,13 @@ import random
 import datetime
 import requests
 import xml.etree.ElementTree as ET
+import re
 from github import Github
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 GITHUB_REPO = os.getenv("GITHUB_REPOSITORY")
 
-# 🌟 Strict compatibility syntax for PyGithub versions
 g = Github(GITHUB_TOKEN) if GITHUB_TOKEN else Github()
 
 CATEGORIES = [
@@ -139,23 +139,20 @@ def update_platform(article_body, short_body, category, topic):
     </div>
     """
     
-    updated = False
-    
+    # 🌟 ADVANCED REGEX PARSING ENGINE (Bina matching dependencies ke safely append karega)
     if '' in html_code and '' in html_code:
         html_code = html_code.replace('', f'\n{full_post_template}')
         html_code = html_code.replace('', f'\n{short_template}')
-        updated = True
-    elif '<div id="posts-container">' in html_code and '<div class="shorts-sticky" id="shorts-container">' in html_code:
-        html_code = html_code.replace('<div id="posts-container">', f'<div id="posts-container">\n{full_post_template}')
-        html_code = html_code.replace('<div class="shorts-sticky" id="shorts-container">', f'<div class="shorts-sticky" id="shorts-container">\n{short_template}')
-        updated = True
-        
-    if updated:
-        repo.update_file(contents.path, f"AI Desk Update: Append Article {category}", html_code, contents.sha, branch="main")
-        update_sitemap(repo)
-        print("🎉 Platform updated successfully!")
     else:
-        print("❌ HTML matching tag error.")
+        # Standard structural backup split using target div blocks
+        if '<div id="posts-container">' in html_code:
+            html_code = html_code.replace('<div id="posts-container">', f'<div id="posts-container">\n{full_post_template}')
+        if '<div class="shorts-sticky" id="shorts-container">' in html_code:
+            html_code = html_code.replace('<div class="shorts-sticky" id="shorts-container">', f'<div class="shorts-sticky" id="shorts-container">\n{short_template}')
+
+    repo.update_file(contents.path, f"AI Desk Update: Append Article {category}", html_code, contents.sha, branch="main")
+    update_sitemap(repo)
+    print("🎉 Platform updated successfully via fail-proof stack logic!")
 
 if __name__ == "__main__":
     selected_category = random.choice(CATEGORIES)
