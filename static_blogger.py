@@ -5,7 +5,6 @@ import requests
 import xml.etree.ElementTree as ET
 from github import Github
 
-# Initialize Environmental Access Secrets
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 GITHUB_REPO = os.getenv("GITHUB_REPOSITORY")
@@ -31,32 +30,51 @@ def get_trending_topic(selected_category):
     return "Market & Global Dynamic System Breakthroughs"
 
 def generate_dual_content(topic, category):
-    # 🌟 Exact NYT Resolution Fluid Layout Config — Images Left/Right gap fix inside injection
     img_style = "width:100% !important; max-width:100% !important; display:block; max-height:480px; object-fit:cover; margin:25px 0; border-radius:4px; border:1px solid #eee;"
     
-    # Dynamic Source Routing based on category keywords (Har section ki alag images)
-    category_keywords = {
-        "Sports": ["stadium", "sports", "athlete"],
-        "Stock News": ["trading", "stocks", "finance"],
-        "Technology": ["software", "cyberpunk", "artificial+intelligence"],
-        "Business & Startups": ["office", "startup", "meeting"],
-        "Film Industry": ["cinema", "movie", "hollywood"],
-        "Movie Review": ["popcorn", "theater", "film"],
-        "Anime Latest": ["tokyo", "neon", "anime"],
-        "Cooking": ["chef", "cooking", "gourmet"],
-        "Health": ["wellness", "fitness", "healthy"],
-        "Lifestyle": ["minimalist", "fashion", "design"],
-        "Global Facts": ["galaxy", "history", "ancient"]
+    # High-quality fixed production fallbacks tailored per category to avoid API limits
+    image_bank = {
+        "Sports": [
+            "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1200&q=80"
+        ],
+        "Technology": [
+            "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80"
+        ],
+        "Business & Startups": [
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1491336477066-31156b5e4f35?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"
+        ],
+        "Stock News": [
+            "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1200&q=80"
+        ],
+        "Film Industry": [
+            "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1478720143022-345ec577fa71?auto=format&fit=crop&w=1200&q=80"
+        ]
     }
     
-    keywords = category_keywords.get(category, ["news", "journalism", "press"])
+    # Generic safe production routes for unlisted categories
+    default_set = [
+        "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1495020689067-958852a6565d?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1200&q=80"
+    ]
     
-    # Fallback to absolute live dynamic links using safe source router templates
-    img1 = f'<img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80" alt="Premium Cover" style="{img_style}">'
-    img2 = f'<img src="https://source.unsplash.com/featured/1200x800/?{keywords[1]}" alt="Context Focal" style="{img_style}">'
-    img3 = f'<img src="https://source.unsplash.com/featured/1200x800/?{keywords[2]}" alt="Analytical View" style="{img_style}">'
+    selected_set = image_bank.get(category, default_set)
     
-    # Backup dynamic text fallback (around 1500+ letters)
+    # Injecting completely responsive source links to fix left/right gaps entirely
+    img1 = f'<img src="{selected_set[0]}" alt="Breaking Header" style="{img_style}">'
+    img2 = f'<img src="{selected_set[1]}" alt="Core Analysis" style="{img_style}">'
+    img3 = f'<img src="{selected_set[2]}" alt="Editorial Context" style="{img_style}">'
+    
     backup_article = f"""
     {img1}
     <p>In a notable shift for regional observation circles, the latest developments surrounding <b>{topic}</b> have captured immediate attention. Administrative departments and public stakeholders are analyzing the practical consequences of this adjustment. Frontline voices in the {category} sector suggest that these newly introduced parameters will require strategic updates across both localized networks and broader operational frameworks.</p>
