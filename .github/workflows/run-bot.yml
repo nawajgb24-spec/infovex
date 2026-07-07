@@ -3,7 +3,7 @@ name: AI Auto Blogger
 on:
   schedule:
     - cron: '0 */6 * * *' # Yeh har 6 ghante me automatic chalega
-  workflow_dispatch: # Isse aap jab chahein manually bhi ek click me chala sakte hain
+  workflow_dispatch: # Isse aap manually bhi ek click me chala sakte hain
 
 jobs:
   build:
@@ -19,11 +19,13 @@ jobs:
 
       - name: Install libraries
         run: |
-          pip install requests openai PyGithub pytrends
+          pip install requests PyGithub pytrends
 
       - name: Run AI Script
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python static_blogger.py
+        
+        
         
