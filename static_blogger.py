@@ -66,7 +66,7 @@ def generate_automated_blog():
             short_text = f"Live breaking updates on {topic} surfaces globally."
             short_kw = chosen_category
 
-        main_search_term = urllib.parse.quote(f"{chosen_category} core focus")
+        main_search_term = urllib.parse.quote(f"{chosen_category} news dynamic")
         main_image_url = f"https://images.unsplash.com/featured/1200x650?{main_search_term}&sig={random.randint(1, 9999)}"
 
         short_search_term = urllib.parse.quote(short_kw)
@@ -115,7 +115,7 @@ def build_magazine_portal(db, latest_art, current_cat):
     def render_feed(cat_name):
         items = db.get(cat_name, [])
         if not items:
-            return "<p class='no-data'>Scanning live channels for incoming data streams...</p>"
+            return "<p class='no-data'>AI sync engine processing updates...</p>"
         
         html = ""
         for i in items:
@@ -123,8 +123,8 @@ def build_magazine_portal(db, latest_art, current_cat):
             html += f"""
             <div class="news-card">
                 <div class="img-wrapper">
-                    <img src="{i['image']}" alt="Infovex Media">
-                    <button class="share-btn-card" onclick="shareArticle('{safe_title}', window.location.href)" title="Share Article">🔗</button>
+                    <img src="{i['image']}" alt="Infovex Core Media">
+                    <button class="share-btn-card" onclick="shareArticle('{safe_title}', window.location.href)" title="Share">🔗</button>
                 </div>
                 <div class="card-meta">
                     <h3>{i['title']}</h3>
@@ -138,121 +138,110 @@ def build_magazine_portal(db, latest_art, current_cat):
     for s in db.get("shorts", []):
         img = s.get("image") if isinstance(s, dict) else "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80"
         txt = s.get("text", s) if isinstance(s, dict) else s
-        cat = s.get("category", "Trending") if isinstance(s, dict) else "LIVE"
+        cat = s.get("category", "Pulse") if isinstance(s, dict) else "LIVE"
         safe_txt = txt.replace("'", "\\'")
         
         shorts_html += f"""
-        <div class="short-premium-card" onclick="shareArticle('Short Pulse: {safe_txt}', window.location.href)">
-            <img class="short-card-img" src="{img}" alt="Shorts">
+        <div class="short-premium-card" onclick="shareArticle('Short Blast: {safe_txt}', window.location.href)">
+            <img class="short-card-img" src="{img}" alt="Shorts Feed">
             <div class="short-card-overlay">
                 <span class="short-tag">{cat}</span>
                 <p class="short-text-p">{txt}</p>
-                <span style="font-size:10px; opacity:0.6; margin-top:4px;">Tap to Share 📤</span>
+                <span style="font-size:9px; opacity:0.5; margin-top:4px;">Tap to Share 📤</span>
             </div>
         </div>
         """
 
     safe_hero_title = latest_art['title'].replace("'", "\\'")
+    cache_version = random.randint(100, 999) # Forces browser to instantly reload layout changes
 
-    # ESCAPED CSS BRACES FOR PYTHON SAFETY
     full_html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infovex Newsroom | Global Premium Intelligence</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Cabinet+Grotesk:wght@800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Infovex Intelligence Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Cabinet+Grotesk:wght@800&v={cache_version}" rel="stylesheet">
     <style>
         :root {{
-            --dark-canvas: #05070f;
-            --surface-panel: #0b0f19;
+            --dark-canvas: #060814;
+            --surface-panel: #0e1326;
             --border-glass: #1e293b;
             --font-primary: #f8fafc;
             --font-secondary: #94a3b8;
             --hyper-blue: #38bdf8;
-            --neon-green: #10b981;
         }}
         * {{ box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }}
-        body {{ background-color: var(--dark-canvas); color: var(--font-primary); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }}
+        body {{ background-color: var(--dark-canvas); color: var(--font-primary); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; -webkit-font-smoothing: antialiased; }}
         
-        /* Rigid Fitting Navigation Utilities */
-        header {{ background-color: rgba(5, 7, 15, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-glass); position: sticky; top: 0; z-index: 2000; }}
-        .header-wrap {{ max-width: 1300px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; padding: 14px 20px; text-align: center; }}
-        .brand-box {{ margin-bottom: 10px; }}
-        .brand {{ font-family: 'Cabinet Grotesk', sans-serif; font-size: 32px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; text-decoration: none; color: #fff; }}
+        header {{ background-color: rgba(6, 8, 20, 0.96); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-glass); position: sticky; top: 0; z-index: 2000; padding: 12px 16px; }}
+        .header-wrap {{ max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 8px; }}
+        .brand {{ font-family: 'Cabinet Grotesk', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; text-decoration: none; color: #fff; line-height: 1; }}
         .brand span {{ color: var(--hyper-blue); }}
-        .sub-tagline {{ font-size: 13px; color: var(--font-secondary); margin-top: 4px; font-weight: 500; letter-spacing: 0.2px; }}
+        .sub-tagline {{ font-size: 11.5px; color: var(--font-secondary); font-weight: 500; letter-spacing: 0.1px; margin-top: 2px; }}
         
-        /* Functional Navigation Links */
-        .nav-categories {{ display: flex; gap: 16px; overflow-x: auto; max-width: 100%; padding: 6px 0; scrollbar-width: none; }}
+        .nav-categories {{ display: flex; gap: 10px; overflow-x: auto; max-width: 100%; padding: 4px 0; width: 100%; justify-content: center; scrollbar-width: none; }}
         .nav-categories::-webkit-scrollbar {{ display: none; }}
-        .nav-categories a {{ text-decoration: none; color: var(--font-secondary); font-size: 13.5px; font-weight: 600; padding: 6px 12px; border-radius: 20px; transition: all 0.2s ease; white-space: nowrap; }}
+        .nav-categories a {{ text-decoration: none; color: var(--font-secondary); font-size: 12.5px; font-weight: 600; padding: 5px 10px; border-radius: 20px; transition: all 0.2s; white-space: nowrap; }}
         .nav-categories a:hover {{ color: var(--hyper-blue); background: rgba(56, 189, 248, 0.08); }}
         
-        /* Clean Structural Framing Layout */
-        .portal-grid {{ max-width: 1300px; margin: 24px auto; display: grid; grid-template-columns: 2.2fr 1fr; gap: 32px; padding: 0 20px; }}
+        .portal-grid {{ max-width: 1200px; margin: 20px auto; display: grid; grid-template-columns: 2.2fr 1fr; gap: 24px; padding: 0 16px; }}
         
-        /* Hero Elements scaling */
-        .spotlight-hero {{ background: var(--surface-panel); border-radius: 14px; border: 1px solid var(--border-glass); overflow: hidden; margin-bottom: 36px; position: relative; }}
-        .spotlight-hero img {{ width: 100%; height: 380px; object-fit: cover; }}
-        .hero-details {{ padding: 24px; }}
-        .section-badge {{ background: rgba(56, 189, 248, 0.12); color: var(--hyper-blue); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; }}
-        h1 {{ font-family: 'Cabinet Grotesk', sans-serif; font-size: 28px; font-weight: 800; margin: 12px 0; line-height: 1.3; color: #fff; }}
-        .hero-desc {{ font-size: 15px; color: #cbd5e1; line-height: 1.6; }}
-        .hero-desc h2 {{ font-size: 18px; color: #fff; margin: 16px 0 8px 0; font-family: 'Cabinet Grotesk', sans-serif; }}
+        .spotlight-hero {{ background: var(--surface-panel); border-radius: 12px; border: 1px solid var(--border-glass); overflow: hidden; margin-bottom: 28px; }}
+        .spotlight-hero img {{ width: 100%; height: 350px; object-fit: cover; }}
+        .hero-details {{ padding: 20px; }}
+        .section-badge {{ background: rgba(56, 189, 248, 0.12); color: var(--hyper-blue); font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; }}
+        h1 {{ font-family: 'Cabinet Grotesk', sans-serif; font-size: 24px; font-weight: 800; margin: 10px 0; line-height: 1.25; color: #fff; }}
+        .hero-desc {{ font-size: 14px; color: #cbd5e1; line-height: 1.55; }}
+        .hero-desc h2 {{ font-size: 16px; color: #fff; margin: 14px 0 6px 0; font-family: 'Cabinet Grotesk', sans-serif; }}
         
-        /* Native Floating Share Trigger */
-        .main-share-trigger {{ background: var(--hyper-blue); color: #000; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; transition: opacity 0.2s; }}
-        .main-share-trigger:hover {{ opacity: 0.9; }}
+        .main-share-trigger {{ background: var(--hyper-blue); color: #000; border: none; padding: 6px 12px; border-radius: 4px; font-weight: 700; font-size: 11px; cursor: pointer; margin-top: 12px; display: inline-flex; align-items: center; gap: 4px; }}
 
-        /* Row blocks */
-        .editorial-row {{ margin-bottom: 36px; scroll-margin-top: 140px; }}
-        .row-heading {{ font-size: 17px; font-weight: 700; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border-glass); display: flex; align-items: center; gap: 8px; color: #fff; font-family: 'Cabinet Grotesk', sans-serif; letter-spacing: 0.5px; }}
-        .row-heading::before {{ content: ''; display: inline-block; width: 4px; height: 14px; background: var(--hyper-blue); border-radius: 2px; }}
+        .editorial-row {{ margin-bottom: 28px; scroll-margin-top: 120px; }}
+        .row-heading {{ font-size: 15px; font-weight: 700; margin-bottom: 14px; padding-bottom: 6px; border-bottom: 1px solid var(--border-glass); display: flex; align-items: center; gap: 6px; color: #fff; font-family: 'Cabinet Grotesk', sans-serif; text-transform: uppercase; }}
+        .row-heading::before {{ content: ''; display: inline-block; width: 3px; height: 12px; background: var(--hyper-blue); border-radius: 1px; }}
         
-        /* Grid Alignment Mechanics */
-        .cards-flex-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }}
-        .news-card {{ background: var(--surface-panel); border-radius: 10px; border: 1px solid var(--border-glass); overflow: hidden; display: flex; flex-direction: column; position: relative; }}
-        .img-wrapper {{ width: 100%; height: 150px; overflow: hidden; position: relative; }}
+        .cards-flex-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }}
+        .news-card {{ background: var(--surface-panel); border-radius: 8px; border: 1px solid var(--border-glass); overflow: hidden; display: flex; flex-direction: column; position: relative; }}
+        .img-wrapper {{ width: 100%; height: 140px; overflow: hidden; position: relative; }}
         .news-card img {{ width: 100%; height: 100%; object-fit: cover; }}
-        .share-btn-card {{ position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid var(--border-glass); border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: background 0.2s; }}
-        .share-btn-card:hover {{ background: var(--hyper-blue); color: #000; }}
-        .card-meta {{ padding: 14px; flex-grow: 1; }}
-        .news-card h3 {{ font-size: 14px; font-weight: 600; color: #f1f5f9; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }}
-        .timestamp {{ font-size: 11px; color: var(--font-secondary); margin-top: 8px; }}
+        .share-btn-card {{ position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid var(--border-glass); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }}
         
-        /* Sidebar System */
-        .sidebar-shorts {{ background: #080c14; border-radius: 14px; padding: 20px; border: 1px solid var(--border-glass); height: fit-content; position: sticky; top: 130px; }}
-        .sidebar-title {{ font-family: 'Cabinet Grotesk', sans-serif; font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 16px; text-transform: uppercase; }}
-        .short-premium-card {{ position: relative; width: 100%; height: 160px; border-radius: 10px; overflow: hidden; margin-bottom: 12px; border: 1px solid var(--border-glass); cursor: pointer; transition: transform 0.2s ease; }}
-        .short-premium-card:hover {{ transform: scale(1.01); }}
+        .card-meta {{ padding: 12px; flex-grow: 1; }}
+        .news-card h3 {{ font-size: 13.5px; font-weight: 600; color: #f1f5f9; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }}
+        .timestamp {{ font-size: 10.5px; color: var(--font-secondary); margin-top: 6px; }}
+        
+        .sidebar-shorts {{ background: #090d1f; border-radius: 12px; padding: 16px; border: 1px solid var(--border-glass); height: fit-content; position: sticky; top: 120px; }}
+        .sidebar-title {{ font-family: 'Cabinet Grotesk', sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 14px; text-transform: uppercase; }}
+        .short-premium-card {{ position: relative; width: 100%; height: 150px; border-radius: 8px; overflow: hidden; margin-bottom: 10px; border: 1px solid var(--border-glass); cursor: pointer; }}
         .short-card-img {{ width: 100%; height: 100%; object-fit: cover; filter: brightness(0.35); }}
-        .short-card-overlay {{ position: absolute; bottom: 0; left: 0; width: 100%; padding: 12px; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }}
-        .short-tag {{ background: var(--hyper-blue); color: #05070f; font-size: 8px; font-weight: 800; padding: 2px 5px; border-radius: 3px; text-transform: uppercase; width: fit-content; margin-bottom: 6px; }}
-        .short-text-p {{ font-size: 12px; font-weight: 600; line-height: 1.4; color: #ffffff; }}
-        .no-data {{ font-size: 12px; color: var(--font-secondary); font-style: italic; }}
+        .short-card-overlay {{ position: absolute; bottom: 0; left: 0; width: 100%; padding: 10px; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }}
+        .short-tag {{ background: var(--hyper-blue); color: #060814; font-size: 8px; font-weight: 800; padding: 1px 4px; border-radius: 2px; text-transform: uppercase; width: fit-content; margin-bottom: 4px; }}
+        .short-text-p {{ font-size: 11.5px; font-weight: 600; line-height: 1.35; color: #ffffff; }}
         
-        /* Premium Corporate Footer Components */
-        footer {{ background: #03050a; border-top: 1px solid var(--border-glass); padding: 40px 20px; margin-top: 60px; text-align: center; }}
-        .footer-wrap {{ max-width: 1300px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 16px; }}
-        .footer-logo {{ font-family: 'Cabinet Grotesk', sans-serif; font-size: 22px; font-weight: 800; color: #fff; text-decoration: none; }}
+        footer {{ background: #03040a; border-top: 1px solid var(--border-glass); padding: 30px 16px; margin-top: 40px; text-align: center; }}
+        .footer-wrap {{ max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; }}
+        .footer-logo {{ font-family: 'Cabinet Grotesk', sans-serif; font-size: 20px; font-weight: 800; color: #fff; text-decoration: none; }}
         .footer-logo span {{ color: var(--hyper-blue); }}
-        .footer-links {{ display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }}
-        .footer-links a {{ color: var(--font-secondary); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.2s; }}
+        .footer-links {{ display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }}
+        .footer-links a {{ color: var(--font-secondary); text-decoration: none; font-size: 12px; transition: color 0.2s; }}
         .footer-links a:hover {{ color: var(--hyper-blue); }}
-        .copyright {{ font-size: 12px; color: #475569; margin-top: 12px; }}
+        .copyright {{ font-size: 11px; color: #475569; }}
 
-        /* Fluid Media Breakpoints */
         @media(max-width: 1024px) {{
-            .portal-grid {{ grid-template-columns: 1fr; gap: 32px; }}
+            .portal-grid {{ grid-template-columns: 1fr; gap: 24px; }}
             .sidebar-shorts {{ position: static; }}
-            .spotlight-hero img {{ height: 280px; }}
+            .spotlight-hero img {{ height: 260px; }}
         }}
         @media(max-width: 640px) {{
-            .brand {{ font-size: 26px; }}
-            h1 {{ font-size: 22px; }}
-            .spotlight-hero img {{ height: 200px; }}
+            header {{ padding: 10px; }}
+            .brand {{ font-size: 24px; }}
+            .sub-tagline {{ font-size: 10px; }}
+            .nav-categories a {{ font-size: 11.5px; padding: 4px 8px; }}
+            h1 {{ font-size: 19px; }}
+            .spotlight-hero img {{ height: 190px; }}
             .cards-flex-grid {{ grid-template-columns: 1fr; }}
+            .news-card h3 {{ font-size: 13px; }}
         }}
     </style>
 </head>
@@ -260,16 +249,14 @@ def build_magazine_portal(db, latest_art, current_cat):
 
 <header>
     <div class="header-wrap">
-        <div class="brand-box">
-            <a href="#" class="brand">INFO<span>VEX</span></a>
-            <div class="sub-tagline">The Pulse of Tomorrow’s Tech, Sports, and Global Intelligence.</div>
-        </div>
+        <a href="#" class="brand">INFO<span>VEX</span></a>
+        <div class="sub-tagline">The Pulse of Tomorrow’s Tech, Sports, and Global Intelligence.</div>
         <div class="nav-categories">
             <a href="#electronics">🔌 Electronics</a>
             <a href="#sports">🏆 Sports</a>
             <a href="#facts">💡 Facts</a>
             <a href="#films">🎬 Films</a>
-            <a href="#health">🌱 Health & Food</a>
+            <a href="#health">🌱 Food</a>
         </div>
     </div>
 </header>
@@ -277,17 +264,17 @@ def build_magazine_portal(db, latest_art, current_cat):
 <main class="portal-grid">
     <section>
         <div class="spotlight-hero">
-            <img src="{latest_art['image']}" alt="Spotlight Headline">
+            <img src="{latest_art['image']}" alt="Main Cover">
             <div class="hero-details">
-                <span class="section-badge">Live Top Story ({current_cat})</span>
+                <span class="section-badge">Featured Core ({current_cat})</span>
                 <h1>{latest_art['title']}</h1>
                 <div class="hero-desc">{latest_art['content']}</div>
-                <button class="main-share-trigger" onclick="shareArticle('{safe_hero_title}', window.location.href)">Share This Update 📤</button>
+                <button class="main-share-trigger" onclick="shareArticle('{safe_hero_title}', window.location.href)">Share Update 📤</button>
             </div>
         </div>
 
         <div class="editorial-row" id="electronics">
-            <div class="row-heading">🔌 Electronics & Tech-Hardware</div>
+            <div class="row-heading">🔌 Electronics & Tech</div>
             <div class="cards-flex-grid">{render_feed("Electronics")}</div>
         </div>
 
@@ -297,23 +284,23 @@ def build_magazine_portal(db, latest_art, current_cat):
         </div>
 
         <div class="editorial-row" id="facts">
-            <div class="row-heading">💡 Interesting Facts Hub</div>
+            <div class="row-heading">💡 Interesting Facts</div>
             <div class="cards-flex-grid">{render_feed("Interesting Facts")}</div>
         </div>
 
         <div class="editorial-row" id="films">
-            <div class="row-heading">🎬 Global Film Industry</div>
+            <div class="row-heading">🎬 Film Industry</div>
             <div class="cards-flex-grid">{render_feed("Film Industry")}</div>
         </div>
 
         <div class="editorial-row" id="health">
-            <div class="row-heading">🌱 Health & Food Insights</div>
+            <div class="row-heading">🌱 Health & Food</div>
             <div class="cards-flex-grid">{render_feed("Health & Food")}</div>
         </div>
     </section>
 
     <aside class="sidebar-shorts">
-        <div class="sidebar-title">⚡ Google Shorts Feed</div>
+        <div class="sidebar-title">⚡ Shorts Feed</div>
         {shorts_html}
     </aside>
 </main>
@@ -322,30 +309,20 @@ def build_magazine_portal(db, latest_art, current_cat):
     <div class="footer-wrap">
         <a href="#" class="footer-logo">INFO<span>VEX</span></a>
         <div class="footer-links">
-            <a href="#">About Intelligence Hub</a>
-            <a href="mailto:contact@infovex.com">📬 Contact Support: contact@infovex.com</a>
-            <a href="#">Privacy Framework</a>
-            <a href="#">Terms of Feed</a>
+            <a href="mailto:contact@infovex.com">📬 Contact: contact@infovex.com</a>
+            <a href="#">Privacy Policy</a>
         </div>
-        <div class="copyright">© 2026 Infovex Media Network. Powered by Gemini AI. All Rights Reserved.</div>
+        <div class="copyright">© 2026 Infovex Network. All Rights Reserved.</div>
     </div>
 </footer>
 
 <script>
 function shareArticle(title, url) {{
     if (navigator.share) {{
-        navigator.share({{
-            title: title,
-            text: title + " - Read more on Infovex Network:",
-            url: url
-        }}).then(() => {{
-            print('Successfully shared');
-        }}).catch((error) => {{
-            console.log('Error sharing:', error);
-        }});
+        navigator.share({{ title: title, text: title, url: url }}).catch(console.error);
     }} else {{
         navigator.clipboard.writeText(title + " - " + url);
-        alert("Link copied to clipboard! Share it anywhere. 🚀");
+        alert("Link copied to clipboard! 🚀");
     }}
 }}
 </script>
@@ -355,7 +332,7 @@ function shareArticle(title, url) {{
 
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(full_html)
-    print("Upgraded professional UI generated successfully.")
+    print("Mobile scalable UI generated.")
 
 if __name__ == "__main__":
     generate_automated_blog()
