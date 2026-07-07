@@ -3,6 +3,7 @@ import random
 import datetime
 import requests
 import xml.etree.ElementTree as ET
+import re
 from github import Github
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -32,7 +33,6 @@ def get_trending_topic(selected_category):
 def generate_dual_content(topic, category):
     img_style = "width:100% !important; max-width:100% !important; display:block; max-height:480px; object-fit:cover; margin:25px 0; border-radius:4px; border:1px solid #eee;"
     
-    # High-quality fixed production fallbacks tailored per category to avoid API limits
     image_bank = {
         "Sports": [
             "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=80",
@@ -61,7 +61,6 @@ def generate_dual_content(topic, category):
         ]
     }
     
-    # Generic safe production routes for unlisted categories
     default_set = [
         "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1495020689067-958852a6565d?auto=format&fit=crop&w=1200&q=80",
@@ -70,7 +69,6 @@ def generate_dual_content(topic, category):
     
     selected_set = image_bank.get(category, default_set)
     
-    # Injecting completely responsive source links to fix left/right gaps entirely
     img1 = f'<img src="{selected_set[0]}" alt="Breaking Header" style="{img_style}">'
     img2 = f'<img src="{selected_set[1]}" alt="Core Analysis" style="{img_style}">'
     img3 = f'<img src="{selected_set[2]}" alt="Editorial Context" style="{img_style}">'
@@ -126,6 +124,28 @@ def generate_dual_content(topic, category):
     except Exception:
         return backup_article, backup_short
 
+def update_sitemap(repo):
+    """Generates or updates sitemap.xml statically for Google Search Console indexing"""
+    today_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    sitemap_content = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://infovex.vercel.app/</loc>
+        <lastmod>{today_date}</lastmod>
+        <changefreq>always</changefreq>
+        <priority>1.0</priority>
+    </url>
+</urlset>"""
+    try:
+        try:
+            contents = repo.get_contents("sitemap.xml", ref="main")
+            repo.update_file(contents.path, "AI Desk: Regenerate Sitemap Matrix", sitemap_content, contents.sha, branch="main")
+        except Exception:
+            repo.create_file("sitemap.xml", "AI Desk: Initialize Automated Sitemap XML", sitemap_content, branch="main")
+        print("🎉 Sitemap Automation Sync Complete!")
+    except Exception as e:
+        print(f"❌ Sitemap calculation warning: {str(e)}")
+
 def update_platform(article_body, short_body, category, topic):
     repo = g.get_repo(GITHUB_REPO)
     contents = repo.get_contents("index.html", ref="main")
@@ -155,7 +175,8 @@ def update_platform(article_body, short_body, category, topic):
         html_code = html_code.replace('<div id="posts-container">', f'<div id="posts-container">\n{full_post_template}')
         html_code = html_code.replace('<div class="shorts-sticky" id="shorts-container">', f'<div class="shorts-sticky" id="shorts-container">\n{short_template}')
         
-        repo.update_file(contents.path, f"AI Desk Update: Dynamic Image Render {category}", html_code, contents.sha, branch="main")
+        repo.update_file(contents.path, f"AI Desk Update: Core Render {category}", html_code, contents.sha, branch="main")
+        update_sitemap(repo)
         print("🎉 Platform updated successfully with deep structures!")
     else:
         print("❌ Error: Target placeholders missing in index.html structure.")
