@@ -2,34 +2,29 @@ name: AI Auto Blogger
 
 on:
   schedule:
-    - cron: '0 */6 * * *' # Yeh har 6 ghante me automatic chalega
-  workflow_dispatch: # Isse aap manually bhi ek click me chala sakte hain
+    # Yeh cron timing ab har 2 ghante (120 minutes) me robot ko automatic chalaegi
+    # Isse din bhar me natural gap ke sath 10-12 viral articles automatic bante rahenge
+    - cron: '0 */2 * * *'
+  workflow_dispatch: # Isse aap jab chahein manually bhi ek click me chala sakte hain
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: credentials/actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
       - name: Install libraries
         run: |
-          pip install -r requirements.txt
+          pip install requests PyGithub pytrends
 
       - name: Run AI Script
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python static_blogger.py
-
-      - name: Save and Push Changes to GitHub
-        run: |
-          git config --global user.name "Infovex AI Bot"
-          git config --global user.email "bot@infovex.com"
-          git add index.html
-          git commit -m "Auto-updated website content via Gemini AI [skip ci]" || echo "No changes to commit"
-          git push
