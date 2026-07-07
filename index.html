@@ -1,114 +1,351 @@
 <!DOCTYPE html>
-<html data-theme="dark">
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infovex | Premium News Portal</title>
+    <meta name="description" content="High-performance news portal covering Tech, Sports, Facts, Film, and Health.">
+    
     <style>
-        :root { --bg: #04060d; --card: #0b0f1e; --accent: #38bdf8; --text: #fff; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin:0; }
-        .portal { display: grid; grid-template-columns: 240px 1fr 300px; gap: 20px; padding: 20px; }
-        .nav a { display: block; color: #94a3b8; padding: 10px; text-decoration: none; }
-        .card { background: var(--card); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
-        .card img { width: 100%; height: 200px; object-fit: cover; }
-        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
-        .modal-content { background: #111; padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
+        /* CSS VARIABLES */
+        :root {
+            --bg-dark: #04060d;
+            --bg-card: #0d111a;
+            --bg-hover: #161c2b;
+            --accent: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: #1e293b;
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --transition: all 0.2s ease-in-out;
+        }
+
+        /* RESET & BASE */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* STICKY HEADER */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(4, 6, 13, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+        .logo span { color: var(--accent); }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a:hover { color: var(--accent); transition: var(--transition); }
+
+        /* MAIN LAYOUT GRID */
+        .container {
+            display: grid;
+            grid-template-columns: 200px 1fr 300px;
+            gap: 2rem;
+            padding: 2rem 5%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* SIDEBAR (Categories) */
+        .sidebar h3 { color: var(--text-muted); font-size: 0.875rem; text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 1px; }
+        .cat-list li { margin-bottom: 0.5rem; }
+        .cat-list a {
+            display: block; padding: 0.5rem 1rem; border-radius: 6px;
+            color: var(--text-muted); transition: var(--transition);
+        }
+        .cat-list a:hover { background: var(--bg-card); color: var(--accent); }
+
+        /* MAIN FEED */
+        .main-feed { display: flex; flex-direction: column; gap: 2rem; }
+        .section-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem; border-left: 4px solid var(--accent); padding-left: 1rem; }
+        
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+        .card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .card-img-wrapper { position: relative; height: 240px; }
+        .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .category-badge {
+            position: absolute; top: 1rem; left: 1rem;
+            background: var(--accent); color: #000;
+            font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.75rem;
+            border-radius: 20px; text-transform: uppercase;
+        }
+        .card-content { padding: 1.5rem; }
+        .card-title { font-size: 1.25rem; margin-bottom: 0.75rem; line-height: 1.4; }
+        .card-snippet { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem; }
+        .card-meta { font-size: 0.85rem; color: #64748b; }
+
+        /* SHORTS FEED */
+        .shorts-sidebar { display: flex; flex-direction: column; gap: 1rem; }
+        .short-card {
+            position: relative; height: 350px; border-radius: 12px; overflow: hidden;
+            cursor: pointer; transition: var(--transition);
+        }
+        .short-card img { width: 100%; height: 100%; object-fit: cover; }
+        .short-card:hover { transform: scale(1.02); }
+        .short-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 1.5rem 1rem 1rem; display: flex; align-items: flex-end; gap: 0.5rem;
+        }
+        .play-icon { width: 20px; height: 20px; fill: var(--text-main); }
+        .short-title { font-weight: 600; font-size: 0.95rem; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+
+        /* SHORTS MODAL OVERLAY */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(4, 6, 13, 0.95); backdrop-filter: blur(8px);
+            z-index: 1000; display: none; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content {
+            background: var(--bg-card); width: 100%; max-width: 400px;
+            border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color);
+            position: relative; transform: translateY(20px); transition: transform 0.3s ease;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8);
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-img { width: 100%; height: 450px; object-fit: cover; }
+        .modal-body { padding: 1.5rem; }
+        .modal-title { font-size: 1.25rem; margin-bottom: 0.5rem; }
+        .modal-text { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
+        
+        .modal-actions { display: flex; gap: 1rem; }
+        .btn {
+            flex: 1; padding: 0.75rem; border: none; border-radius: 8px;
+            font-weight: 600; cursor: pointer; transition: var(--transition);
+            display: flex; justify-content: center; align-items: center; gap: 0.5rem;
+        }
+        .btn-share { background: var(--accent); color: #000; }
+        .btn-share:hover { background: #2ea4db; }
+        .btn-close { background: var(--bg-hover); color: var(--text-main); }
+        .btn-close:hover { background: var(--border-color); }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 1024px) {
+            .container { grid-template-columns: 1fr 300px; }
+            .sidebar { display: none; } /* Hide sidebar on tablet */
+        }
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; padding: 1rem; }
+            .nav-links { display: none; } /* Hamburger menu placeholder */
+            .card-img-wrapper { height: 200px; }
+            .shorts-sidebar { flex-direction: row; overflow-x: auto; padding-bottom: 1rem; scroll-snap-type: x mandatory; }
+            .short-card { min-width: 200px; height: 300px; scroll-snap-align: start; }
+        }
     </style>
 </head>
 <body>
-    <div class="portal">
-        <nav class="nav"><h3>Categories</h3><a href="#latest">Latest</a><a href="#electronics">Electronics</a></nav>
-        <main>
-            <div class="card">
-                <img src="https://images.unsplash.com/featured/1200x650?Electronics&sig=1256">
-                <div style="padding:15px;"><h1>The electronics landscape in 2026 is defined by a profound integration of artificial intelligence, significant advancements in display technology, and increasingly sophisticated smart devices across all sectors. The global consumer electronics market is projected to reach an estimated USD 1,387.4 billion in 2026, showcasing robust growth.
 
-Here are the top trending news and innovations shaping the electronics world in 2026:
+    <header>
+        <div class="logo">Info<span>vex</span></div>
+        <nav class="nav-links">
+            <a href="#">Tech</a>
+            <a href="#">Sports</a>
+            <a href="#">Facts</a>
+            <a href="#">Film</a>
+            <a href="#">Health</a>
+        </nav>
+    </header>
 
-**1. The Rise of Ambient and On-Device AI**
-Artificial intelligence is no longer merely a feature but an ambient presence, operating seamlessly and proactively within devices. This shift is characterized by AI running directly on a gadget's chips (on-device AI) rather than relying heavily on cloud-based processing. This is facilitated by the widespread integration of Neural Processing Units (NPUs) into hardware, leading to enhanced privacy, speed, and energy efficiency for AI functions such as real-time language translation, image processing, and personalization. Edge AI, which processes data directly on the device, is a cornerstone connecting many of these evolving trends.
+    <div class="container">
+        <aside class="sidebar">
+            <h3>Discover</h3>
+            <ul class="cat-list">
+                <li><a href="#">Technology</a></li>
+                <li><a href="#">Sports Arena</a></li>
+                <li><a href="#">Fascinating Facts</a></li>
+                <li><a href="#">Film Industry</a></li>
+                <li><a href="#">Health & Wellness</a></li>
+            </ul>
+        </aside>
 
-**2. Revolutionary Display Technologies**
-2026 marks a pivotal year for display innovations:
-*   **Zero-Crease Foldable and Flexible Displays** are no longer experimental; they have become a durable and standard feature for premium smartphones, laptops, and tablets, with engineers finally eradicating the irritating display crease. Flexible OLED screens are also extending their utility to wearables and automotive interiors.
-*   **Next-Generation TVs** are seeing wider adoption of Micro-LED technology and more affordable, larger OLED screens, with televisions exceeding 100 inches becoming an increasingly common sight in homes. Enhanced color accuracy and contrast through advanced HDR standards are also key improvements.
-*   **Privacy Displays** are emerging, exemplified by the innovative feature found in the Samsung Galaxy S26 Ultra.
+        <main class="main-feed">
+            <h2 class="section-title">Latest Updates</h2>
+            
+    <article class="card">
+        <div class="card-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=800&q=80" alt="The Future of Quantum Computing in 2027" loading="lazy">
+            <span class="category-badge">Tech</span>
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">The Future of Quantum Computing in 2027</h3>
+            <p class="card-snippet">Researchers have just crossed a major threshold in qubit stability, paving the way for commercial quantum systems.</p>
+            <span class="card-meta">Oct 24, 2026</span>
+        </div>
+    </article>
+    
 
-**3. Advanced Smart Glasses and Spatial Computing**
-Sleek, lightweight Augmented Reality (AR) smart glasses, designed to resemble conventional eyewear, are a prominent innovation. These True Spatial Computing Glasses (Smart Glasses 2.0) transcend basic AR capabilities, offering features like real-time language translation, AR navigation, and hands-free access to AI assistants.
+    <article class="card">
+        <div class="card-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=800&q=80" alt="Global Football: New Tournament Formats Announced" loading="lazy">
+            <span class="category-badge">Sports</span>
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Global Football: New Tournament Formats Announced</h3>
+            <p class="card-snippet">FIFA reveals a controversial but highly anticipated structure for the upcoming club competitions.</p>
+            <span class="card-meta">Oct 23, 2026</span>
+        </div>
+    </article>
+    
 
-**4. Sophisticated Domestic Robotics and Drones**
-Domestic robots and drones are becoming increasingly integrated into daily life. Innovations include stair-climbing domestic robots and personal security drones, which repurpose advanced aerospace and defense technologies for consumer use.
+    <article class="card">
+        <div class="card-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?auto=format&fit=crop&w=800&q=80" alt="Why the James Webb Space Telescope is Redefining Time" loading="lazy">
+            <span class="category-badge">Facts</span>
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Why the James Webb Space Telescope is Redefining Time</h3>
+            <p class="card-snippet">Recent deep-field captures show galaxies formed much earlier than standard cosmological models predicted.</p>
+            <span class="card-meta">Oct 22, 2026</span>
+        </div>
+    </article>
+    
 
-**5. Intelligent and Predictive Smart Home Ecosystems**
-Smart homes are evolving into truly intelligent, cohesive, and predictive ecosystems. Devices are learning user habits and proactively adjusting environments, such as lighting and temperature, and focusing on automated climate control and proactive security. Wearables are also integrating with these systems for more comprehensive health monitoring.
+    <article class="card">
+        <div class="card-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=800&q=80" alt="Indie Films Sweeping the Autumn Festivals" loading="lazy">
+            <span class="category-badge">Film</span>
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Indie Films Sweeping the Autumn Festivals</h3>
+            <p class="card-snippet">Big studios take a backseat as independent directors showcase groundbreaking narratives this season.</p>
+            <span class="card-meta">Oct 21, 2026</span>
+        </div>
+    </article>
+    
 
-**6. Foundational Semiconductor Innovations**
-Underpinning many of these electronic advancements are significant developments in semiconductor technology:
-*   **Edge AI Acceleration** is seeing embedded AI being deployed into nearly every category of device and sensor, boosting autonomous capabilities.
-*   **Advanced Materials** like Silicon carbide (SiC), gallium nitride (GaN), and silicon photonics are crucial for meeting the increasing demands for efficient power conversion, thermal management, and data transmission.
-*   The emergence of **specialized AI chips** is optimizing workloads across various applications and sectors.
-
-**7. Market Dynamics and Consumer Impact**
-The consumer electronics market in 2026 is also experiencing shifts:
-*   There is a growing trend of shrinkflation, where rising memory costs—driven by the substantial demand from AI data centers—are compelling manufacturers to either increase prices or reduce device specifications (e.g., less RAM, weaker processors) often without explicit notification to buyers.
-*   Computers and tablets are identified as key drivers of market growth.
-*   An increasing emphasis is placed on eco-responsible and sustainable electronics across the industry.
-
-**8. Highlighted Products and Technologies from CES 2026 and Beyond**
-*   **Smartphones** like the Samsung Galaxy S26 Ultra (featuring an innovative Privacy Display and a powerful Snapdragon processor), the Oppo Find X9 Ultra (dubbed a camera phone king), and the Nothing Phone (4a) Pro (noted for its unique Glyph Matrix design) are making headlines.
-*   **Laptops** include Apple's MacBook Neo 13-inch (with the M5 chip), Dell's XPS 13 (a competitor to the MacBook Neo), and Microsoft's Surface Laptop Ultra (powered by Nvidia's ARM-based RTX Spark chip).
-*   **Wearables** such as the Shokz OpenFit Pro (open earbuds offering noise reduction) and XREAL 1S AR Glasses are gaining traction.
-*   **Gaming monitors** are advancing with products like the Dell UltraSharp 32 4K QD-OLED Monitor, LG's UltraGear GX7 (a QHD OLED display with a 540Hz refresh rate), and Samsung's 32-inch Odyssey 3D (offering glasses-free 3D on a 6K display).
-*   **Novelties unveiled at CES 2026** include Lego Smart Bricks (with embedded chips for interactive play), smart bird feeders that identify birds by their songs, portable allergen testing mini-labs, smart vacuums capable of locating lost remotes, and AI bartenders.</h1><p>The Electronics Landscape in 2026: AI Integration, Revolutionary Displays, and Smarter Devices Drive Robust Growth<br><br>The global electronics landscape in 2026 is experiencing a transformative period, marked by a profound integration of artificial intelligence, significant advancements in display technology, and the pervasive rise of sophisticated smart devices across all sectors. The global consumer electronics market is projected to reach an impressive USD 1,387.4 billion this year, showcasing robust growth fueled by relentless innovation.<br><br>A defining characteristic of 2026 is the **Rise of Ambient and On-Device AI**. Artificial intelligence is no longer merely a standalone feature but an ambient presence, operating seamlessly and proactively within devices. This significant shift sees AI running directly on a gadget's chips (on-device AI) rather than relying heavily on cloud-based processing. The widespread integration of Neural Processing Units (NPUs) into hardware facilitates this, leading to enhanced privacy, speed, and energy efficiency for crucial AI functions such as real-time language translation, advanced image processing, and deep personalization. Edge AI, processing data directly on the device, serves as a cornerstone connecting many of these evolving technological trends.<br><br>**Revolutionary Display Technologies** are also taking center stage. 2026 marks a pivotal year for display innovations, particularly with **Zero-Crease Foldable and Flexible Displays** becoming a durable and standard feature for premium smartphones, laptops, and tablets. Engineers have successfully eradicated the irritating display crease, and flexible OLED screens are extending their utility to wearables and automotive interiors. **Next-Generation TVs** are seeing wider adoption of Micro-LED technology and more affordable, larger OLED screens, with televisions exceeding 100 inches becoming an increasingly common sight in homes. Enhanced color accuracy and contrast through advanced HDR standards are also key improvements. Furthermore, **Privacy Displays** are emerging, exemplified by an innovative feature found in the Samsung Galaxy S26 Ultra.<br><br>The era of **Advanced Smart Glasses and Spatial Computing** has arrived with sleek, lightweight Augmented Reality (AR) smart glasses, designed to resemble conventional eyewear, emerging as a prominent innovation. These True Spatial Computing Glasses (Smart Glasses 2.0) transcend basic AR capabilities, offering advanced features like real-time language translation, AR navigation, and hands-free access to AI assistants.<br><br>In domestic settings, **Sophisticated Domestic Robotics and Drones** are becoming increasingly integrated into daily life. Innovations include advanced stair-climbing domestic robots and personal security drones, which repurpose advanced aerospace and defense technologies for consumer use, enhancing both convenience and safety.<br><br>Smart homes are evolving into truly **Intelligent and Predictive Smart Home Ecosystems**. Devices are now learning user habits and proactively adjusting environments, such as lighting and temperature, with a strong focus on automated climate control and proactive security measures. Wearables are also integrating more deeply with these systems for comprehensive health monitoring.<br><br>Underpinning many of these electronic advancements are significant developments in **Foundational Semiconductor Innovations**. **Edge AI Acceleration** is seeing embedded AI deployed into nearly every category of device and sensor, boosting autonomous capabilities. The adoption of **Advanced Materials** like Silicon carbide (SiC), gallium nitride (GaN), and silicon photonics is crucial for meeting the increasing demands for efficient power conversion, thermal management, and data transmission. Additionally, the emergence of **specialized AI chips** is optimizing workloads across various applications and sectors.<br><br>The **Market Dynamics and Consumer Impact** in 2026 reflect several shifts. There is a growing trend of shrinkflation, where rising memory costs—driven by the substantial demand from AI data centers—are compelling manufacturers to either increase prices or reduce device specifications (e.g., less RAM, weaker processors) often without explicit notification to buyers. Despite these challenges, computers and tablets are identified as key drivers of market growth. An increasing emphasis is also being placed on eco-responsible and sustainable electronics across the industry.<br><br>**Highlighted Products and Technologies from CES 2026 and Beyond** showcase the innovation boom. In smartphones, devices like the Samsung Galaxy S26 Ultra, featuring its innovative Privacy Display and powerful Snapdragon processor, the Oppo Find X9 Ultra, dubbed a camera phone king, and the Nothing Phone (4a) Pro, noted for its unique Glyph Matrix design, are making headlines.<br><br>The laptop market is seeing Apple's MacBook Neo 13-inch with the M5 chip, Dell's XPS 13 as a strong competitor, and Microsoft's Surface Laptop Ultra powered by Nvidia's ARM-based RTX Spark chip. Wearables such as the Shokz OpenFit Pro, offering open earbuds with noise reduction, and XREAL 1S AR Glasses are gaining traction.<br><br>Gaming monitors are advancing rapidly with products like the Dell UltraSharp 32 4K QD-OLED Monitor, LG's UltraGear GX7, a QHD OLED display with an impressive 540Hz refresh rate, and Samsung's 32-inch Odyssey 3D, offering glasses-free 3D on a 6K display. Novelties unveiled at CES 2026 include Lego Smart Bricks with embedded chips for interactive play, smart bird feeders that identify birds by their songs, portable allergen testing mini-labs, smart vacuums capable of locating lost remotes, and AI bartenders, underscoring the widespread application of intelligence in daily life.</p></div>
-            </div>
-            <div id="latest"><h2>Latest News</h2><div class='card'><h3>The electronics landscape in 2026 is defined by a profound integration of artificial intelligence, significant advancements in display technology, and increasingly sophisticated smart devices across all sectors. The global consumer electronics market is projected to reach an estimated USD 1,387.4 billion in 2026, showcasing robust growth.
-
-Here are the top trending news and innovations shaping the electronics world in 2026:
-
-**1. The Rise of Ambient and On-Device AI**
-Artificial intelligence is no longer merely a feature but an ambient presence, operating seamlessly and proactively within devices. This shift is characterized by AI running directly on a gadget's chips (on-device AI) rather than relying heavily on cloud-based processing. This is facilitated by the widespread integration of Neural Processing Units (NPUs) into hardware, leading to enhanced privacy, speed, and energy efficiency for AI functions such as real-time language translation, image processing, and personalization. Edge AI, which processes data directly on the device, is a cornerstone connecting many of these evolving trends.
-
-**2. Revolutionary Display Technologies**
-2026 marks a pivotal year for display innovations:
-*   **Zero-Crease Foldable and Flexible Displays** are no longer experimental; they have become a durable and standard feature for premium smartphones, laptops, and tablets, with engineers finally eradicating the irritating display crease. Flexible OLED screens are also extending their utility to wearables and automotive interiors.
-*   **Next-Generation TVs** are seeing wider adoption of Micro-LED technology and more affordable, larger OLED screens, with televisions exceeding 100 inches becoming an increasingly common sight in homes. Enhanced color accuracy and contrast through advanced HDR standards are also key improvements.
-*   **Privacy Displays** are emerging, exemplified by the innovative feature found in the Samsung Galaxy S26 Ultra.
-
-**3. Advanced Smart Glasses and Spatial Computing**
-Sleek, lightweight Augmented Reality (AR) smart glasses, designed to resemble conventional eyewear, are a prominent innovation. These True Spatial Computing Glasses (Smart Glasses 2.0) transcend basic AR capabilities, offering features like real-time language translation, AR navigation, and hands-free access to AI assistants.
-
-**4. Sophisticated Domestic Robotics and Drones**
-Domestic robots and drones are becoming increasingly integrated into daily life. Innovations include stair-climbing domestic robots and personal security drones, which repurpose advanced aerospace and defense technologies for consumer use.
-
-**5. Intelligent and Predictive Smart Home Ecosystems**
-Smart homes are evolving into truly intelligent, cohesive, and predictive ecosystems. Devices are learning user habits and proactively adjusting environments, such as lighting and temperature, and focusing on automated climate control and proactive security. Wearables are also integrating with these systems for more comprehensive health monitoring.
-
-**6. Foundational Semiconductor Innovations**
-Underpinning many of these electronic advancements are significant developments in semiconductor technology:
-*   **Edge AI Acceleration** is seeing embedded AI being deployed into nearly every category of device and sensor, boosting autonomous capabilities.
-*   **Advanced Materials** like Silicon carbide (SiC), gallium nitride (GaN), and silicon photonics are crucial for meeting the increasing demands for efficient power conversion, thermal management, and data transmission.
-*   The emergence of **specialized AI chips** is optimizing workloads across various applications and sectors.
-
-**7. Market Dynamics and Consumer Impact**
-The consumer electronics market in 2026 is also experiencing shifts:
-*   There is a growing trend of shrinkflation, where rising memory costs—driven by the substantial demand from AI data centers—are compelling manufacturers to either increase prices or reduce device specifications (e.g., less RAM, weaker processors) often without explicit notification to buyers.
-*   Computers and tablets are identified as key drivers of market growth.
-*   An increasing emphasis is placed on eco-responsible and sustainable electronics across the industry.
-
-**8. Highlighted Products and Technologies from CES 2026 and Beyond**
-*   **Smartphones** like the Samsung Galaxy S26 Ultra (featuring an innovative Privacy Display and a powerful Snapdragon processor), the Oppo Find X9 Ultra (dubbed a camera phone king), and the Nothing Phone (4a) Pro (noted for its unique Glyph Matrix design) are making headlines.
-*   **Laptops** include Apple's MacBook Neo 13-inch (with the M5 chip), Dell's XPS 13 (a competitor to the MacBook Neo), and Microsoft's Surface Laptop Ultra (powered by Nvidia's ARM-based RTX Spark chip).
-*   **Wearables** such as the Shokz OpenFit Pro (open earbuds offering noise reduction) and XREAL 1S AR Glasses are gaining traction.
-*   **Gaming monitors** are advancing with products like the Dell UltraSharp 32 4K QD-OLED Monitor, LG's UltraGear GX7 (a QHD OLED display with a 540Hz refresh rate), and Samsung's 32-inch Odyssey 3D (offering glasses-free 3D on a 6K display).
-*   **Novelties unveiled at CES 2026** include Lego Smart Bricks (with embedded chips for interactive play), smart bird feeders that identify birds by their songs, portable allergen testing mini-labs, smart vacuums capable of locating lost remotes, and AI bartenders.</h3></div></div>
+    <article class="card">
+        <div class="card-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80" alt="Optimizing Sleep: The Science of Circadian Rhythms" loading="lazy">
+            <span class="category-badge">Health</span>
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Optimizing Sleep: The Science of Circadian Rhythms</h3>
+            <p class="card-snippet">New studies suggest that micro-adjustments to light exposure can drastically improve deep sleep phases.</p>
+            <span class="card-meta">Oct 20, 2026</span>
+        </div>
+    </article>
+    
         </main>
-        <aside>
-            <h3>Shorts</h3><div class='card' onclick='openModal("2026 electronics feature ambient AI, revolutionary displays, advanced smart devices, and semiconductor innovations driving robust market growth.", "https://images.unsplash.com/featured/400x400?Electronics&sig=495")' style='cursor:pointer'><img src='https://images.unsplash.com/featured/400x400?Electronics&sig=495'><p>2026 electronics feature ambient AI, revolutionary displays, advanced smart devices, and semiconductor innovations driving robust market growth.</p></div>
+
+        <aside class="shorts-sidebar">
+            <h2 class="section-title">Shorts</h2>
+            
+    <div class="short-card" onclick="openModal('Did you know?', 'Bananas are berries, but strawberries aren\'t! Botanically speaking, a berry has seeds on the inside.', 'https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=400&q=80')">
+        <img src="https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=400&q=80" alt="Did you know?" loading="lazy">
+        <div class="short-overlay">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="play-icon"><path d="M8 5v14l11-7z"/></svg>
+            <span class="short-title">Did you know?</span>
+        </div>
+    </div>
+    
+
+    <div class="short-card" onclick="openModal('Tech Tip', 'You can use \'window.structuredClone()\' in modern JS for deep copying objects without external libraries.', 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=400&q=80')">
+        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=400&q=80" alt="Tech Tip" loading="lazy">
+        <div class="short-overlay">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="play-icon"><path d="M8 5v14l11-7z"/></svg>
+            <span class="short-title">Tech Tip</span>
+        </div>
+    </div>
+    
+
+    <div class="short-card" onclick="openModal('Quick Workout', 'The 4-7-8 breathing technique: Inhale for 4s, hold for 7s, exhale for 8s. Instantly lowers heart rate.', 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=400&q=80')">
+        <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=400&q=80" alt="Quick Workout" loading="lazy">
+        <div class="short-overlay">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="play-icon"><path d="M8 5v14l11-7z"/></svg>
+            <span class="short-title">Quick Workout</span>
+        </div>
+    </div>
+    
         </aside>
     </div>
-    <div id="modal" class="modal" onclick="this.style.display='none'">
-        <div class="modal-content"><img id="mImg" style="width:100%;"><p id="mText"></p></div>
+
+    <div class="modal-overlay" id="shortModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <img src="" alt="" class="modal-img" id="modalImg">
+            <div class="modal-body">
+                <h3 class="modal-title" id="modalTitle"></h3>
+                <p class="modal-text" id="modalContent"></p>
+                <div class="modal-actions">
+                    <button class="btn btn-share" onclick="shareShort()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                        Share
+                    </button>
+                    <button class="btn btn-close" onclick="closeModal(event, true)">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
+
     <script>
-        function openModal(t, i) {{ document.getElementById('mText').innerText=t; document.getElementById('mImg').src=i; document.getElementById('modal').style.display='flex'; }}
+        const modal = document.getElementById('shortModal');
+        const modalImg = document.getElementById('modalImg');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('modalContent');
+        
+        let currentShareData = {};
+
+        // Open Modal and Populate Data
+        function openModal(title, content, imgUrl) {
+            modalImg.src = imgUrl;
+            modalTitle.textContent = title;
+            modalContent.textContent = content;
+            
+            // Setup data for sharing
+            currentShareData = {
+                title: 'Infovex Shorts: ' + title,
+                text: content,
+                url: window.location.href 
+            };
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        // Close Modal
+        function closeModal(event, force = false) {
+            // Close if background is clicked or close button is clicked
+            if (force || event.target === modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto'; // Restore scrolling
+            }
+        }
+
+        // Native Web Share API
+        async function shareShort() {
+            if (navigator.share) {
+                try {
+                    await navigator.share(currentShareData);
+                    console.log('Content shared successfully');
+                } catch (err) {
+                    console.log('Error sharing:', err);
+                }
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                alert("Sharing is not supported on this browser. Copy the URL to share!");
+            }
+        }
     </script>
 </body>
 </html>
