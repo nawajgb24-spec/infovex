@@ -5,6 +5,7 @@ import requests
 import xml.etree.ElementTree as ET
 from github import Github
 
+# Initialize Environmental Access Secrets
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 GITHUB_REPO = os.getenv("GITHUB_REPOSITORY")
@@ -30,10 +31,32 @@ def get_trending_topic(selected_category):
     return "Market & Global Dynamic System Breakthroughs"
 
 def generate_dual_content(topic, category):
-    img1 = '<img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80" alt="News Image 1" style="width:100%; display:block; max-height:450px; object-fit:cover; margin:25px 0; border-radius:4px; border:1px solid #eee;">'
-    img2 = '<img src="https://images.unsplash.com/photo-1495020689067-958852a6565d?auto=format&fit=crop&w=1200&q=80" alt="News Image 2" style="width:100%; display:block; max-height:400px; object-fit:cover; margin:25px 0; border-radius:4px; border:1px solid #eee;">'
-    img3 = '<img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1200&q=80" alt="News Image 3" style="width:100%; display:block; max-height:400px; object-fit:cover; margin:25px 0; border-radius:4px; border:1px solid #eee;">'
-
+    # 🌟 Exact NYT Resolution Fluid Layout Config — Images Left/Right gap fix inside injection
+    img_style = "width:100% !important; max-width:100% !important; display:block; max-height:480px; object-fit:cover; margin:25px 0; border-radius:4px; border:1px solid #eee;"
+    
+    # Dynamic Source Routing based on category keywords (Har section ki alag images)
+    category_keywords = {
+        "Sports": ["stadium", "sports", "athlete"],
+        "Stock News": ["trading", "stocks", "finance"],
+        "Technology": ["software", "cyberpunk", "artificial+intelligence"],
+        "Business & Startups": ["office", "startup", "meeting"],
+        "Film Industry": ["cinema", "movie", "hollywood"],
+        "Movie Review": ["popcorn", "theater", "film"],
+        "Anime Latest": ["tokyo", "neon", "anime"],
+        "Cooking": ["chef", "cooking", "gourmet"],
+        "Health": ["wellness", "fitness", "healthy"],
+        "Lifestyle": ["minimalist", "fashion", "design"],
+        "Global Facts": ["galaxy", "history", "ancient"]
+    }
+    
+    keywords = category_keywords.get(category, ["news", "journalism", "press"])
+    
+    # Fallback to absolute live dynamic links using safe source router templates
+    img1 = f'<img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80" alt="Premium Cover" style="{img_style}">'
+    img2 = f'<img src="https://source.unsplash.com/featured/1200x800/?{keywords[1]}" alt="Context Focal" style="{img_style}">'
+    img3 = f'<img src="https://source.unsplash.com/featured/1200x800/?{keywords[2]}" alt="Analytical View" style="{img_style}">'
+    
+    # Backup dynamic text fallback (around 1500+ letters)
     backup_article = f"""
     {img1}
     <p>In a notable shift for regional observation circles, the latest developments surrounding <b>{topic}</b> have captured immediate attention. Administrative departments and public stakeholders are analyzing the practical consequences of this adjustment. Frontline voices in the {category} sector suggest that these newly introduced parameters will require strategic updates across both localized networks and broader operational frameworks.</p>
@@ -110,22 +133,11 @@ def update_platform(article_body, short_body, category, topic):
     </div>
     """
     
-    # Precise character stripping matcher
-    article_placeholder = '<div id="posts-container"></div>'
-    short_placeholder = '<div class="shorts-sticky" id="shorts-container"></div>'
-    
-    # Check alternate format case if spaces are created by hand
-    if article_placeholder not in html_code:
-        article_placeholder = '<div id="posts-container">\n            \n            </div>'
-    if short_placeholder not in html_code:
-        short_placeholder = '<div class="shorts-sticky" id="shorts-container">\n                \n            </div>'
-
-    # Fallback to pure string tag check
     if '<div id="posts-container">' in html_code and '<div class="shorts-sticky" id="shorts-container">' in html_code:
         html_code = html_code.replace('<div id="posts-container">', f'<div id="posts-container">\n{full_post_template}')
         html_code = html_code.replace('<div class="shorts-sticky" id="shorts-container">', f'<div class="shorts-sticky" id="shorts-container">\n{short_template}')
         
-        repo.update_file(contents.path, f"AI Desk Update: Premium Deep-Content {category}", html_code, contents.sha, branch="main")
+        repo.update_file(contents.path, f"AI Desk Update: Dynamic Image Render {category}", html_code, contents.sha, branch="main")
         print("🎉 Platform updated successfully with deep structures!")
     else:
         print("❌ Error: Target placeholders missing in index.html structure.")
