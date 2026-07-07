@@ -2,17 +2,16 @@ name: AI Auto Blogger
 
 on:
   schedule:
-    # Yeh cron timing ab har 2 ghante (120 minutes) me robot ko automatic chalaegi
-    # Isse din bhar me natural gap ke sath 10-12 viral articles automatic bante rahenge
+    # Har 2 ghante me robot automatic chalega
     - cron: '0 */2 * * *'
-  workflow_dispatch: # Isse aap jab chahein manually bhi ek click me chala sakte hain
+  workflow_dispatch: # Manually chalane ke liye
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: credentials/actions/checkout@v3
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
