@@ -1,178 +1,137 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INFOVEX — Premium AI News Platform</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --nyt-black: #121212;
-            --nyt-gray: #555555;
-            --nyt-light-gray: #f4f4f4;
-            --nyt-border: #dfdfdf;
-            --nyt-red: #a31a1a;
-            --bg-white: #ffffff;
-        }
+import os
+import random
+import datetime
+import requests
+import xml.etree.ElementTree as ET
+from github import Github
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Lora', Georgia, serif; background-color: var(--bg-white); color: var(--nyt-black); line-height: 1.6; padding-bottom: 50px; }
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+GITHUB_REPO = os.getenv("GITHUB_REPOSITORY")
 
-        /* HEADER & LOGO */
-        header { padding: 15px 20px 5px 20px; text-align: center; max-width: 1300px; margin: 0 auto; }
-        .logo { font-family: 'Cinzel', serif; font-size: 45px; font-weight: 900; letter-spacing: 3px; text-decoration: none; color: var(--nyt-black); display: inline-block; }
+g = Github(GITHUB_TOKEN)
+
+CATEGORIES = [
+    "Sports", "Lifestyle", "Stock News", "Cooking", "Health", 
+    "Film Industry", "Movie Review", "Anime Latest", "Technology", 
+    "Business & Startups", "Global Facts"
+]
+
+def get_trending_topic(selected_category):
+    try:
+        url = "https://news.google.com/rss?hl=en-IN&gl=IN&ceid=IN:en"
+        response = requests.get(url, timeout=10)
+        root = ET.fromstring(response.content)
+        titles = [item.find('title').text for item in root.findall('.//item')]
+        if titles:
+            return random.choice(titles[:15]).split(" - ")[0]
+    except Exception:
+        pass
+    return "Market & Global Dynamic System Breakthroughs"
+
+def generate_dual_content(topic, category):
+    img1 = '<img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80" alt="News Image 1" style="width:100%; display:block; max-height:450px; object-fit:cover; margin:25px 0; border-radius:4px; border:1px solid #eee;">'
+    img2 = '<img src="https://images.unsplash.com/photo-1495020689067-958852a6565d?auto=format&fit=crop&w=1200&q=80" alt="News Image 2" style="width:100%; display:block; max-height:400px; object-fit:cover; margin:25px 0; border-radius:4px; border:1px solid #eee;">'
+    img3 = '<img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1200&q=80" alt="News Image 3" style="width:100%; display:block; max-height:400px; object-fit:cover; margin:25px 0; border-radius:4px; border:1px solid #eee;">'
+
+    backup_article = f"""
+    {img1}
+    <p>In a notable shift for regional observation circles, the latest developments surrounding <b>{topic}</b> have captured immediate attention. Administrative departments and public stakeholders are analyzing the practical consequences of this adjustment. Frontline voices in the {category} sector suggest that these newly introduced parameters will require strategic updates across both localized networks and broader operational frameworks.</p>
+    <p>As experts study the core logistics, initial updates highlight a series of process compliance milestones that demand focus over the coming transition cycle. Media platforms and panels indicate that maintaining consistency across regional distribution channels will be essential to sustain steady momentum moving forward.</p>
+    {img2}
+    <p>Furthermore, execution teams advise tracking authorized portals and official releases closely for direct instructions rather than unofficial bulletins. Specific operational adjustments are expected to roll out sequentially across designated systems over the next few weeks.</p>
+    {img3}
+    <p>Ultimately, the long-term path will depend heavily on how smoothly localized platforms integrate these updates. As administrative groups realign their approaches, observers continue to watch this scenario closely, awaiting subsequent updates from management committees.</p>
+    """
+    
+    backup_short = f"<h4>Quick Update on {topic}</h4><p>The operational framework for {topic} is expanding under the {category} matrix. Observers highlight key metrics taking effect across regional channels.</p>"
+
+    if not GEMINI_API_KEY:
+        return backup_article, backup_short
+
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    
+    prompt = f"""
+    Act as a senior investigative journalist writing for a premium mainstream newspaper. Write a natural, human-written style news analysis report for INFOVEX about '{topic}' under the category '{category}'.
+    
+    STRICT ANTI-AI RULES (To bypass Google AI Detectors):
+    1. NEVER use cliché AI transitions or buzzwords like: furthermore, moreover, in conclusion, testament, delve, rapidly evolving, landscape, crucial, paramount, underscore, pivotal, look no further, ripples, or world of.
+    2. Write with variable sentence lengths (burstiness)—some sentences should be short and punchy, others detailed. This is how real humans write.
+    3. Use a direct, informative, objective, and gripping journalistic tone. Start straight with the breaking news hook.
+    4. Let the weight of the topic decide the length naturally. If it is a major global event, explain the deep impact extensively (up to 2000-3000 letters). If it is a crisp rule update, keep it tight and informative (around 1000 letters).
+    
+    STRUCTURE REQUIREMENT:
+    - Write exactly 4 fully-developed human paragraphs.
+    - Wrap the main story paragraphs inside [START_ARTICLE]...[END_ARTICLE] tags using standard HTML p tags.
+    - Wrap a sharp Google Short summary inside [START_SHORT]...[END_SHORT] tags using an h4 headline and a single paragraph.
+    """
+    
+    try:
+        response = requests.post(url, json={"contents": [{"parts": [{"text": prompt}]}]}, timeout=15)
+        res_json = response.json()
+        raw_text = res_json['candidates'][0]['content']['parts'][0]['text']
+        raw_text = raw_text.replace("```html", "").replace("```", "").strip()
         
-        /* NYT STYLE CATEGORIES LINKS BAR */
-        .categories-nav { border-top: 1px solid var(--nyt-border); border-bottom: 4px double var(--nyt-black); padding: 8px 0; max-width: 1300px; margin: 0 auto 15px auto; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
-        .categories-nav a { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--nyt-black); text-decoration: none; letter-spacing: 0.5px; transition: 0.15s; }
-        .categories-nav a:hover { color: var(--nyt-red); text-decoration: underline; }
-
-        .live-bar { background: #fafafa; border-bottom: 1px solid var(--nyt-border); padding: 8px 20px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; text-align: center; letter-spacing: 0.5px; margin-bottom: 25px; }
-        .live-dot { color: var(--nyt-red); animation: blink 1.2s infinite; margin-right: 5px; font-size: 16px; vertical-align: middle; }
-        @keyframes blink { 50% { opacity: 0; } }
-
-        /* HOME SCREEN LAYOUT */
-        .main-container { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 1fr 360px; gap: 40px; padding: 0 20px; }
-        .news-section { border-right: 1px solid var(--nyt-border); padding-right: 30px; }
-        .section-header { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; border-bottom: 1px solid var(--nyt-black); padding-bottom: 5px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--nyt-black); }
+        article = raw_text.split("[START_ARTICLE]")[1].split("[END_ARTICLE]")[0].strip()
+        short = raw_text.split("[START_SHORT]")[1].split("[END_SHORT]")[0].strip()
         
-        /* POST CARDS */
-        .post-card { border-bottom: 1px solid var(--nyt-border); padding-bottom: 25px; margin-bottom: 25px; display: flex; flex-direction: column; gap: 12px; cursor: pointer; }
-        .post-card:last-child { border-bottom: none; }
-        .post-card .meta { font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; color: var(--nyt-red); font-weight: 700; letter-spacing: 0.5px; }
-        .post-card h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 28px; font-weight: 700; line-height: 1.2; color: var(--nyt-black); }
-        .post-card:hover h2 { color: #333; text-decoration: underline; text-decoration-color: #ccc; }
-        .post-card .preview-text { font-size: 15px; color: #444; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-align: justify; }
-        .post-card .full-story { display: none; }
+        paras = article.split("</p>")
+        if len(paras) >= 4:
+            article = f"{img1}\n{paras[0]}</p>\n{paras[1]}</p>\n{img2}\n{paras[2]}</p>\n{img3}\n" + "\n".join(paras[3:])
+        else:
+            article = f"{img1}\n{article}\n{img2}"
+            
+        return article, short
+    except Exception:
+        return backup_article, backup_short
 
-        /* SHORTS STICKY STREAM */
-        .shorts-sticky { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 20px; max-height: 90vh; overflow-y: auto; }
-        .short-card { background: var(--bg-white); border-bottom: 1px solid var(--nyt-border); padding-bottom: 15px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; }
-        .short-card .short-tag { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; color: var(--nyt-red); text-transform: uppercase; letter-spacing: 0.5px; }
-        .short-card h4 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; line-height: 1.3; color: var(--nyt-black); }
-        .short-card p { font-family: 'Inter', sans-serif; font-size: 13px; color: #555; line-height: 1.5; }
-        .short-card:hover h4 { text-decoration: underline; }
-
-        /* NYT SINGLE PAGE VIEW (Gaps Alignment Fixed) */
-        #single-page-view { display: none; max-width: 800px; margin: 0 auto; padding: 20px 0; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        .nyt-back-btn { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; color: var(--nyt-gray); background: none; border: 1px solid var(--nyt-border); padding: 6px 15px; border-radius: 3px; cursor: pointer; margin-bottom: 30px; display: inline-flex; align-items: center; gap: 5px; }
-        .nyt-back-btn:hover { color: var(--nyt-black); border-color: var(--nyt-black); background: var(--nyt-light-gray); }
-        
-        .nyt-article-header { border-bottom: 1px solid var(--nyt-border); padding-bottom: 20px; margin-bottom: 30px; width: 100%; }
-        .nyt-article-header .nyt-meta { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; color: var(--nyt-red); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-        .nyt-article-header h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 42px; font-weight: 700; line-height: 1.15; color: var(--nyt-black); letter-spacing: -0.5px; }
-        
-        .nyt-content { width: 100%; }
-        .nyt-content p { font-size: 18px; color: #111; line-height: 1.75; margin-bottom: 25px; text-align: justify; font-family: 'Lora', Georgia, serif; }
-        .nyt-content img { width: 100% !important; max-width: 100% !important; height: auto !important; display: block; margin: 25px 0; }
-
-        @media (max-width: 950px) {
-            .main-container { grid-template-columns: 1fr; }
-            .news-section { border-right: none; padding-right: 0; }
-            .logo { font-size: 32px; }
-            .categories-nav { gap: 10px; padding: 10px; }
-            .nyt-article-header h1 { font-size: 30px; }
-            #single-page-view { padding: 20px; }
-        }
-    </style>
-</head>
-<body>
-
-    <header>
-        <a href="#" class="logo" onclick="goHome(event)">INFOVEX</a>
-    </header>
-
-    <nav class="categories-nav">
-        <a href="#" onclick="goHome(event)">Home</a>
-        <a href="#" onclick="goHome(event)">Sports</a>
-        <a href="#" onclick="goHome(event)">Lifestyle</a>
-        <a href="#" onclick="goHome(event)">Stock News</a>
-        <a href="#" onclick="goHome(event)">Cooking</a>
-        <a href="#" onclick="goHome(event)">Health</a>
-        <a href="#" onclick="goHome(event)">Film Industry</a>
-        <a href="#" onclick="goHome(event)">Movie Review</a>
-        <a href="#" onclick="goHome(event)">Anime Latest</a>
-        <a href="#" onclick="goHome(event)">Technology</a>
-        <a href="#" onclick="goHome(event)">Business</a>
-        <a href="#" onclick="goHome(event)">Global Facts</a>
-    </nav>
-
-    <div class="live-bar" id="liveBar">
-        <span class="live-dot">●</span> <b>LIVE DESK:</b> International Stream Online. Refresh for latest analysis.
+def update_platform(article_body, short_body, category, topic):
+    repo = g.get_repo(GITHUB_REPO)
+    contents = repo.get_contents("index.html", ref="main")
+    html_code = contents.decoded_content.decode("utf-8")
+    
+    timestamp = datetime.datetime.now().strftime("%B %d, %Y • %I:%M %p")
+    
+    full_post_template = f"""
+    <div class="post-card">
+        <div class="meta">{timestamp} • {category}</div>
+        <h2>{topic}</h2>
+        <div class="preview-text">Latest comprehensive editorial report on {topic} has been released. Click to read the full analysis.</div>
+        <div class="full-story">
+            {article_body}
+        </div>
     </div>
-
-    <div class="main-container" id="home-page-view">
-        <main class="news-section">
-            <div class="section-header">Latest Editorial Feed</div>
-            <div id="posts-container"></div>
-        </main>
-
-        <aside class="shorts-section">
-            <div class="section-header">⚡ Google Shorts</div>
-            <div class="shorts-sticky" id="shorts-container"></div>
-        </aside>
+    """
+    
+    short_template = f"""
+    <div class="short-card">
+        <div class="short-tag">{category}</div>
+        {short_body}
     </div>
+    """
+    
+    # Precise character stripping matcher
+    article_placeholder = '<div id="posts-container"></div>'
+    short_placeholder = '<div class="shorts-sticky" id="shorts-container"></div>'
+    
+    # Check alternate format case if spaces are created by hand
+    if article_placeholder not in html_code:
+        article_placeholder = '<div id="posts-container">\n            \n            </div>'
+    if short_placeholder not in html_code:
+        short_placeholder = '<div class="shorts-sticky" id="shorts-container">\n                \n            </div>'
 
-    <div id="single-page-view">
-        <button class="nyt-back-btn" onclick="goHome(event)">← Back to Home</button>
-        <article class="nyt-full-article">
-            <div class="nyt-article-header" id="nytArticleHeader"></div>
-            <div class="nyt-content" id="nytArticleBody"></div>
-        </article>
-    </div>
+    # Fallback to pure string tag check
+    if '<div id="posts-container">' in html_code and '<div class="shorts-sticky" id="shorts-container">' in html_code:
+        html_code = html_code.replace('<div id="posts-container">', f'<div id="posts-container">\n{full_post_template}')
+        html_code = html_code.replace('<div class="shorts-sticky" id="shorts-container">', f'<div class="shorts-sticky" id="shorts-container">\n{short_template}')
+        
+        repo.update_file(contents.path, f"AI Desk Update: Premium Deep-Content {category}", html_code, contents.sha, branch="main")
+        print("🎉 Platform updated successfully with deep structures!")
+    else:
+        print("❌ Error: Target placeholders missing in index.html structure.")
 
-    <script>
-        document.getElementById('posts-container').addEventListener('click', function(e) {
-            let card = e.target.closest('.post-card');
-            if(card) {
-                let meta = card.querySelector('.meta').innerText;
-                let title = card.querySelector('h2').innerText;
-                let fullStory = card.querySelector('.full-story').innerHTML;
-                
-                document.getElementById('nytArticleHeader').innerHTML = `
-                    <div class="nyt-meta">${meta}</div>
-                    <h1>${title}</h1>
-                `;
-                document.getElementById('nytArticleBody').innerHTML = fullStory;
-                
-                document.getElementById('home-page-view').style.display = 'none';
-                document.getElementById('liveBar').style.display = 'none';
-                document.getElementById('single-page-view').style.display = 'block';
-                window.scrollTo(0, 0);
-            }
-        });
-
-        document.getElementById('shorts-container').addEventListener('click', function(e) {
-            let card = e.target.closest('.short-card');
-            if(card) {
-                let title = card.querySelector('h4').innerText;
-                let body = card.querySelector('p').innerText;
-                let tag = card.querySelector('.short-tag').innerText;
-                
-                document.getElementById('nytArticleHeader').innerHTML = `
-                    <div class="nyt-meta">⚡ Google Short • ${tag}</div>
-                    <h1>${title}</h1>
-                `;
-                document.getElementById('nytArticleBody').innerHTML = `<p style="font-size:20px; line-height:1.8;">${body}</p>`;
-                
-                document.getElementById('home-page-view').style.display = 'none';
-                document.getElementById('liveBar').style.display = 'none';
-                document.getElementById('single-page-view').style.display = 'block';
-                window.scrollTo(0, 0);
-            }
-        });
-
-        function goHome(e) {
-            e.preventDefault();
-            document.getElementById('single-page-view').style.display = 'none';
-            document.getElementById('home-page-view').style.display = 'grid';
-            document.getElementById('liveBar').style.display = 'block';
-            window.scrollTo(0, 0);
-        }
-    </script>
-</body>
-</html>
+if __name__ == "__main__":
+    selected_category = random.choice(CATEGORIES)
+    trending_topic = get_trending_topic(selected_category)
+    article_html, short_html = generate_dual_content(trending_topic, selected_category)
+    update_platform(article_html, short_html, selected_category, trending_topic)
