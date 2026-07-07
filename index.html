@@ -20,19 +20,35 @@
         .main-container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 380px; gap: 40px; padding: 30px 20px; }
         .news-section { border-right: 1px solid var(--nyt-border); padding-right: 30px; }
         .section-header { font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 700; border-bottom: 2px solid var(--nyt-black); padding-bottom: 5px; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1.5px; }
-        .post-card { border-bottom: 1px solid var(--nyt-border); padding-bottom: 30px; margin-bottom: 30px; }
+        
+        /* CLICKABLE POST CARD */
+        .post-card { border-bottom: 1px solid var(--nyt-border); padding-bottom: 30px; margin-bottom: 30px; cursor: pointer; transition: 0.2s; }
+        .post-card:hover h2 { color: #555; }
         .post-card .meta { font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; color: var(--nyt-red); font-weight: 700; margin-bottom: 10px; }
         .post-card h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 32px; font-weight: 800; line-height: 1.2; margin-bottom: 15px; }
+        
         .shorts-sticky { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 20px; max-height: 90vh; overflow-y: auto; }
         .short-card { background: #fdfdfd; border: 1px solid var(--nyt-border); border-radius: 6px; padding: 18px; border-top: 4px solid var(--nyt-red); }
         .short-card .short-tag { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; background: var(--nyt-red); color: white; padding: 3px 8px; width: max-content; margin-bottom: 10px; text-transform: uppercase; }
         .short-card h4 { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; line-height: 1.3; margin-bottom: 8px; }
-        @media (max-width: 950px) { .main-container { grid-template-columns: 1fr; } .news-section { border-right: none; padding-right: 0; } }
+        
+        /* FULL ARTICLE MODAL POPUP */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; backdrop-filter: blur(4px); justify-content: center; align-items: center; padding: 20px; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--bg-white); width: 100%; max-width: 800px; max-height: 85vh; overflow-y: auto; border-radius: 8px; padding: 40px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .close-modal { position: absolute; top: 20px; right: 25px; font-size: 28px; cursor: pointer; color: #aaa; transition: 0.2s; }
+        .close-modal:hover { color: var(--nyt-black); }
+        .modal-meta { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; color: var(--nyt-red); text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid var(--nyt-border); padding-bottom: 10px; }
+        .modal-body h2 { font-family: 'Playfair Display', serif; font-size: 36px; line-height: 1.2; margin-bottom: 20px; }
+        .modal-body p { font-size: 18px; line-height: 1.7; color: #222; margin-bottom: 20px; text-align: justify; }
+
+        @media (max-width: 950px) { .main-container { grid-template-columns: 1fr; } .news-section { border-right: none; padding-right: 0; } .modal-content { padding: 20px; } }
     </style>
 </head>
 <body>
     <header><button class="menu-btn">☰ Menu</button><a href="#" class="logo">INFOVEX</a></header>
-    <div class="live-bar"><span class="live-dot">●</span> <b>LIVE UPDATES:</b> AI Desk active. Feed updates dynamically.</div>
+    <div class="live-bar"><span class="live-dot">●</span> <b>LIVE UPDATES:</b> AI Desk active. Click any article to read full scoop.</div>
+    
     <div class="main-container">
         <main class="news-section">
             <div class="section-header">Latest Editorial Feed</div>
@@ -44,20 +60,46 @@
         </aside>
     </div>
 
+    <div class="modal" id="articleModal" onclick="closeArticle(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="document.getElementById('articleModal').classList.remove('active')">✕</span>
+            <div class="modal-meta" id="modalMeta"></div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
     <script src="data.js"></script>
     <script>
-        // Automatic data binding loop
         if (typeof blogData !== 'undefined') {
             const postsCont = document.getElementById('posts-container');
             const shortsCont = document.getElementById('shorts-container');
             
-            blogData.articles.forEach(art => {
-                postsCont.innerHTML += `<div class="post-card"><div class="meta">${art.date} • ${art.category}</div>${art.content}</div>`;
+            // Loop with unique index mapping for opening full viewer
+            blogData.articles.forEach((art, index) => {
+                postsCont.innerHTML += `
+                    <div class="post-card" onclick="openArticle(${index})">
+                        <div class="meta">${art.date} • ${art.category}</div>
+                        ${art.content}
+                    </div>`;
             });
             
             blogData.shorts.forEach(sh => {
                 shortsCont.innerHTML += `<div class="short-card"><div class="short-tag">${sh.category}</div>${sh.content}</div>`;
             });
+        }
+
+        // Reader core actions
+        function openArticle(index) {
+            if(typeof blogData !== 'undefined' && blogData.articles[index]) {
+                const target = blogData.articles[index];
+                document.getElementById('modalMeta').innerText = `${target.date} • ${target.category}`;
+                document.getElementById('modalBody').innerHTML = target.content;
+                document.getElementById('articleModal').classList.add('active');
+            }
+        }
+
+        function closeArticle(event) {
+            document.getElementById('articleModal').classList.remove('active');
         }
     </script>
 </body>
