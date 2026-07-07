@@ -8,118 +8,56 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --nyt-black: #121212;
-            --nyt-gray: #666666;
-            --nyt-border: #dddddd;
-            --nyt-red: #a31a1a;
-            --bg-white: #ffffff;
-        }
-
+        :root { --nyt-black: #121212; --nyt-gray: #666666; --nyt-border: #dddddd; --nyt-red: #a31a1a; --bg-white: #ffffff; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Lora', Georgia, serif; background-color: var(--bg-white); color: var(--nyt-black); line-height: 1.6; padding-bottom: 50px; }
-
-        /* HEADER & NAVIGATION */
         header { border-bottom: 4px double var(--nyt-black); padding: 15px 20px; text-align: center; position: relative; max-width: 1400px; margin: 0 auto; }
-        .menu-btn { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 22px; cursor: pointer; background: none; border: none; font-family: 'Inter', sans-serif; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .menu-btn { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 22px; cursor: pointer; background: none; border: none; font-family: 'Inter', sans-serif; font-weight: 600; }
         .logo { font-family: 'Cinzel', serif; font-size: 45px; font-weight: 900; letter-spacing: 3px; text-decoration: none; color: var(--nyt-black); display: inline-block; }
-        
-        .live-bar { background: #fafafa; border-bottom: 1px solid var(--nyt-border); padding: 8px 20px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; text-align: center; letter-spacing: 0.5px; }
+        .live-bar { background: #fafafa; border-bottom: 1px solid var(--nyt-border); padding: 8px 20px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; text-align: center; }
         .live-dot { color: var(--nyt-red); animation: blink 1.2s infinite; margin-right: 5px; font-size: 16px; vertical-align: middle; }
         @keyframes blink { 50% { opacity: 0; } }
-
-        /* HAMBURGER SIDEBAR */
-        .sidebar { position: fixed; top: 0; left: -320px; width: 320px; height: 100%; background: var(--bg-white); box-shadow: 5px 0 25px rgba(0,0,0,0.15); z-index: 1000; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px 25px; overflow-y: auto; }
-        .sidebar.active { left: 0; }
-        .sidebar h3 { font-family: 'Inter', sans-serif; border-bottom: 2px solid var(--nyt-black); padding-bottom: 10px; margin-bottom: 20px; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
-        .sidebar .close-btn { float: right; cursor: pointer; font-size: 22px; font-weight: 400; }
-        .sidebar a { display: block; padding: 12px 0; color: var(--nyt-black); text-decoration: none; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 500; border-bottom: 1px solid #f0f0f0; transition: 0.2s; }
-        .sidebar a:hover { color: var(--nyt-red); padding-left: 5px; }
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 999; backdrop-filter: blur(2px); }
-        .overlay.active { display: block; }
-
-        /* TWO-COLUMN LAYOUT */
         .main-container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 380px; gap: 40px; padding: 30px 20px; }
-
-        /* LEFT COLUMN (MAIN ARTICLES) */
         .news-section { border-right: 1px solid var(--nyt-border); padding-right: 30px; }
         .section-header { font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 700; border-bottom: 2px solid var(--nyt-black); padding-bottom: 5px; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1.5px; }
-        
-        /* ARTICLE CARD */
-        .post-card { border-bottom: 1px solid var(--nyt-border); padding-bottom: 30px; margin-bottom: 30px; display: flex; flex-direction: column; gap: 15px; }
-        .post-card:last-child { border-bottom: none; }
-        .post-card .meta { font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; color: var(--nyt-red); font-weight: 700; letter-spacing: 1px; }
-        .post-card h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 32px; font-weight: 800; line-height: 1.2; color: var(--nyt-black); text-decoration: none; }
-        .post-card h2 a { color: inherit; text-decoration: none; }
-        .post-card p { font-size: 16px; color: #222; text-align: justify; line-height: 1.6; }
-
-        /* RIGHT COLUMN (GOOGLE SHORTS) */
-        .shorts-section { position: relative; }
-        .shorts-sticky { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 20px; max-height: 90vh; overflow-y: auto; padding-right: 5px; }
-        .shorts-sticky::-webkit-scrollbar { width: 4px; }
-        .shorts-sticky::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-        
-        /* SHORTS CARD */
-        .short-card { background: #fdfdfd; border: 1px solid var(--nyt-border); border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 12px; border-top: 4px solid var(--nyt-red); box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
-        .short-card .short-tag { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; background: var(--nyt-red); color: white; padding: 3px 8px; border-radius: 3px; width: max-content; text-transform: uppercase; letter-spacing: 0.5px; }
-        .short-card h4 { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; line-height: 1.3; color: var(--nyt-black); }
-        .short-card p { font-family: 'Inter', sans-serif; font-size: 13.5px; color: #444; line-height: 1.5; text-align: justify; }
-
-        /* RESPONSIVE DESIGN (MOBILE) */
-        @media (max-width: 950px) {
-            .main-container { grid-template-columns: 1fr; gap: 40px; }
-            .news-section { border-right: none; padding-right: 0; }
-            .logo { font-size: 32px; }
-            .menu-btn { font-size: 18px; }
-        }
+        .post-card { border-bottom: 1px solid var(--nyt-border); padding-bottom: 30px; margin-bottom: 30px; }
+        .post-card .meta { font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; color: var(--nyt-red); font-weight: 700; margin-bottom: 10px; }
+        .post-card h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 32px; font-weight: 800; line-height: 1.2; margin-bottom: 15px; }
+        .shorts-sticky { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 20px; max-height: 90vh; overflow-y: auto; }
+        .short-card { background: #fdfdfd; border: 1px solid var(--nyt-border); border-radius: 6px; padding: 18px; border-top: 4px solid var(--nyt-red); }
+        .short-card .short-tag { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; background: var(--nyt-red); color: white; padding: 3px 8px; width: max-content; margin-bottom: 10px; text-transform: uppercase; }
+        .short-card h4 { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; line-height: 1.3; margin-bottom: 8px; }
+        @media (max-width: 950px) { .main-container { grid-template-columns: 1fr; } .news-section { border-right: none; padding-right: 0; } }
     </style>
 </head>
 <body>
-
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-    <div class="sidebar" id="sidebar">
-        <h3>Categories <span class="close-btn" onclick="toggleMenu()">✕</span></h3>
-        <a href="#" onclick="toggleMenu()">🏠 Home</a>
-        <a href="#" onclick="toggleMenu()">⚽ Sports</a>
-        <a href="#" onclick="toggleMenu()">🕶️ Lifestyle</a>
-        <a href="#" onclick="toggleMenu()">📈 Stock News</a>
-        <a href="#" onclick="toggleMenu()">🍳 Cooking</a>
-        <a href="#" onclick="toggleMenu()">🩺 Health</a>
-        <a href="#" onclick="toggleMenu()">🎬 Film Industry</a>
-        <a href="#" onclick="toggleMenu()">🍿 Movie Review</a>
-        <a href="#" onclick="toggleMenu()">⚔️ Anime Latest</a>
-        <a href="#" onclick="toggleMenu()">💻 Technology</a>
-        <a href="#" onclick="toggleMenu()">💼 Business & Startups</a>
-        <a href="#" onclick="toggleMenu()">🌍 Global Facts</a>
-    </div>
-
-    <header>
-        <button class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
-        <a href="#" class="logo">INFOVEX</a>
-    </header>
-
-    <div class="live-bar">
-        <span class="live-dot">●</span> <b>LIVE UPDATES:</b> INFOVEX AI Editorial Desk is active. Refreshing viral content across all categories.
-    </div>
-
+    <header><button class="menu-btn">☰ Menu</button><a href="#" class="logo">INFOVEX</a></header>
+    <div class="live-bar"><span class="live-dot">●</span> <b>LIVE UPDATES:</b> AI Desk active. Feed updates dynamically.</div>
     <div class="main-container">
-        
         <main class="news-section">
             <div class="section-header">Latest Editorial Feed</div>
             <div id="posts-container"></div>
         </main>
-
         <aside class="shorts-section">
             <div class="section-header">⚡ Google Shorts</div>
             <div class="shorts-sticky" id="shorts-container"></div>
         </aside>
-
     </div>
 
+    <script src="data.js"></script>
     <script>
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
+        // Automatic data binding loop
+        if (typeof blogData !== 'undefined') {
+            const postsCont = document.getElementById('posts-container');
+            const shortsCont = document.getElementById('shorts-container');
+            
+            blogData.articles.forEach(art => {
+                postsCont.innerHTML += `<div class="post-card"><div class="meta">${art.date} • ${art.category}</div>${art.content}</div>`;
+            });
+            
+            blogData.shorts.forEach(sh => {
+                shortsCont.innerHTML += `<div class="short-card"><div class="short-tag">${sh.category}</div>${sh.content}</div>`;
+            });
         }
     </script>
 </body>
