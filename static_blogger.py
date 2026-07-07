@@ -9,8 +9,8 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 GITHUB_REPO = os.getenv("GITHUB_REPOSITORY")
 
-# 🌟 Updated to use auth parameter to remove deprecation warning
-g = Github(auth=Github.Auth.Token(GITHUB_TOKEN)) if GITHUB_TOKEN else Github()
+# 🌟 Strict compatibility syntax for PyGithub versions
+g = Github(GITHUB_TOKEN) if GITHUB_TOKEN else Github()
 
 CATEGORIES = [
     "Sports", "Lifestyle", "Stock News", "Cooking", "Health", 
@@ -139,23 +139,23 @@ def update_platform(article_body, short_body, category, topic):
     </div>
     """
     
-    # 🌟 FIXED CRASH-PROOF STRING INJECTION LOGIC
+    updated = False
+    
     if '' in html_code and '' in html_code:
         html_code = html_code.replace('', f'\n{full_post_template}')
         html_code = html_code.replace('', f'\n{short_template}')
-        
-        repo.update_file(contents.path, f"AI Desk Update: Stable Append {category}", html_code, contents.sha, branch="main")
-        update_sitemap(repo)
-        print("🎉 Platform updated and safely appended via explicit comments!")
+        updated = True
     elif '<div id="posts-container">' in html_code and '<div class="shorts-sticky" id="shorts-container">' in html_code:
         html_code = html_code.replace('<div id="posts-container">', f'<div id="posts-container">\n{full_post_template}')
         html_code = html_code.replace('<div class="shorts-sticky" id="shorts-container">', f'<div class="shorts-sticky" id="shorts-container">\n{short_template}')
+        updated = True
         
-        repo.update_file(contents.path, f"AI Desk Update: Container Append {category}", html_code, contents.sha, branch="main")
+    if updated:
+        repo.update_file(contents.path, f"AI Desk Update: Append Article {category}", html_code, contents.sha, branch="main")
         update_sitemap(repo)
-        print("🎉 Platform updated and safely appended via fallback containers!")
+        print("🎉 Platform updated successfully!")
     else:
-        print("❌ HTML structure tags not found. Update aborted.")
+        print("❌ HTML matching tag error.")
 
 if __name__ == "__main__":
     selected_category = random.choice(CATEGORIES)
