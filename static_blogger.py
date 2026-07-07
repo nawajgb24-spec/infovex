@@ -5,14 +5,12 @@ import requests
 import xml.etree.ElementTree as ET
 from github import Github
 
-# Secret vault se keys access karna
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 GITHUB_REPO = os.getenv("GITHUB_REPOSITORY")
 
 g = Github(GITHUB_TOKEN)
 
-# Aapki saari approved categories
 CATEGORIES = [
     "Sports", "Lifestyle", "Stock News", "Cooking", "Health", 
     "Film Industry", "Movie Review", "Anime Latest", "Technology", 
@@ -22,21 +20,17 @@ CATEGORIES = [
 def get_trending_topic(selected_category):
     print(f"🔄 Fetching latest live news for category: {selected_category}...")
     try:
-        # Google News India RSS Feed - Ekdum genuine aur unstoppable source
         url = "https://news.google.com/rss?hl=en-IN&gl=IN&ceid=IN:en"
         response = requests.get(url, timeout=10)
         root = ET.fromstring(response.content)
         
-        # Kisi bhi ek fresh top trending headline ko uthana
         titles = [item.find('title').text for item in root.findall('.//item')]
         if titles:
-            # AI ke liye chota aur clean topic nikalna
             clean_title = random.choice(titles[:15]).split(" - ")[0]
             return clean_title
     except Exception as e:
         print(f"⚠️ RSS Fetch error, using category smart baseline: {e}")
     
-    # Baseline fallback taaki code kabhi crash na ho
     backups = {
         "Sports": "India Cricket Team Match Strategy and Upcoming Tournament Updates",
         "Stock News": "Stock Market Highlights Today Nifty Sensex Top Gainers and Losers",
@@ -101,7 +95,6 @@ def update_platform(article_body, short_body, category):
     
     timestamp = datetime.datetime.now().strftime("%B %d, %Y • %I:%M %p")
     
-    # 1. Structure the full post
     full_post_template = f"""
     <div class="post-card">
         <div class="meta">{timestamp} • {category}</div>
@@ -109,7 +102,6 @@ def update_platform(article_body, short_body, category):
     </div>
     """
     
-    # 2. Structure the Google Short card
     short_template = f"""
     <div class="short-card">
         <div class="short-tag">{category}</div>
@@ -117,8 +109,9 @@ def update_platform(article_body, short_body, category):
     </div>
     """
     
-    article_placeholder = 'id="posts-container">'
-    short_placeholder = 'id="shorts-container">'
+    # Exact tag string match clean strategy
+    article_placeholder = '<div id="posts-container">'
+    short_placeholder = '<div class="shorts-sticky" id="shorts-container">'
     
     if article_placeholder in html_code and short_placeholder in html_code:
         html_code = html_code.replace(article_placeholder, f"{article_placeholder}\n{full_post_template}")
@@ -133,7 +126,7 @@ def update_platform(article_body, short_body, category):
         )
         print("🎉 Platform updated live successfully!")
     else:
-        print("❌ Error: Target placeholders missing in index.html index grids.")
+        print("❌ Error: Target placeholders missing in index.html structure.")
 
 if __name__ == "__main__":
     try:
