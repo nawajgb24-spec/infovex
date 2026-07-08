@@ -24,3 +24,42 @@ CONFIG_FILE = "config.json"
 HOME_LIMIT = 30
 HOT_LIMIT = 10
 TRENDING_LIMIT = 30
+
+def load_json(path):
+
+    try:
+
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+    except FileNotFoundError:
+
+        logger.error(f"{path} not found.")
+        return {}
+
+    except json.JSONDecodeError:
+
+        logger.error(f"{path} contains invalid JSON.")
+        return {}
+
+    except Exception as e:
+
+        logger.exception(e)
+        return {}
+
+def save_json(path, data):
+
+    try:
+
+        with open(path, "w", encoding="utf-8") as f:
+
+            json.dump(
+                data,
+                f,
+                indent=4,
+                ensure_ascii=False
+            )
+
+    except Exception as e:
+
+        logger.exception(e)
