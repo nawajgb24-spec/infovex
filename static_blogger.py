@@ -25,14 +25,15 @@ logging.basicConfig(
 logger = logging.getLogger("INFOVEX")
 
 CATEGORIES = [
-    "Anime",
+     "World",
     "Trending News",
+    "Business",
+    "Stock News",
     "Tech",
     "Sports",
-    "Business",
     "Lifestyle",
-    "Stock News",
-    "World",
+    "Anime",
+    "Food & Nutrition",
 ]
 
 HOME_MARKER = "<!-- BLOG_INSERT_MARKER -->"
