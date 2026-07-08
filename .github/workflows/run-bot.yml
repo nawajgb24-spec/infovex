@@ -2,13 +2,16 @@ name: AI Auto Blogger
 
 on:
   schedule:
-    # Har 2 ghante me robot automatic piche se chalega (Autopilot Active)
     - cron: '0 */2 * * *'
-  workflow_dispatch: # Isse manual button bhi chalu rahega emergency ke liye
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -19,11 +22,11 @@ jobs:
           python-version: '3.10'
 
       - name: Install libraries
-        run: |
-          pip install requests PyGithub pytrends
+        run: pip install requests PyGithub
 
       - name: Run AI Script
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         run: python static_blogger.py
