@@ -560,25 +560,7 @@ text-decoration:none;
 """
 
 # ==========================================================
-# GitHub Upload
-# ==========================================================
-
-def save_article(repo, slug, topic, html_page):
-
-    path = f"posts/{slug}.html"
-
-    repo.create_file(
-        path=path,
-        message=f"Publish: {topic}",
-        content=html_page,
-        branch="main"
-    )
-
-    logger.info(f"Created {path}")
-
-
-# ==========================================================
-# Homepage Card
+# 
 # ==========================================================
 
 def build_card(topic, category, summary, slug):
@@ -625,7 +607,7 @@ def update_homepage(
         message="Homepage Update",
         content=updated_html,
         sha=homepage_file.sha,
-        branch="main"
+        branch=BRANCH
     )
 
     logger.info("Homepage Updated Successfully.")
@@ -635,7 +617,85 @@ def update_homepage(
 # Publish Story
 # ==========================================================
 
-def publish_story(
+
+def create_article_object(
+    topic,
+    category,
+    summary,
+    slug,
+    image
+):
+
+def create_article_object
+    return {
+        "title": topic,
+        "slug": slug,
+        "category": category,
+        "summary": summary,
+        "image": image,
+        "published": today_string(),
+        "hot": False,
+        "trending": True
+        "url": f"posts/{slug}.html"
+    }
+    
+    def load_articles_database(repo):
+
+    try:
+
+        file = repo.get_contents("articles.json")
+
+        content = file.decoded_content.decode("utf-8")
+
+        return file, json.loads(content)
+
+    except Exception:
+
+        return None, {
+            "articles": []
+        }
+
+    def load_articles_database(
+    repo
+):
+    ...
+    return ...
+
+
+
+def save_articles_database(
+    repo,
+    database_file,
+    database
+):
+
+    content = json.dumps(
+        database,
+        indent=4,
+        ensure_ascii=False
+    )
+
+    if database_file is None:
+
+        repo.create_file(
+            path="articles.json",
+            message="Create articles database",
+            content=content,
+            branch=BRANCH
+        )
+
+    else:
+
+        repo.update_file(
+            path=database_file.path,
+            message="Update articles database",
+            content=content,
+            sha=database_file.sha,
+            branch=BRANCH
+        )
+
+
+  def publish_story(
     repo,
     homepage_file,
     homepage_html,
@@ -656,8 +716,32 @@ def publish_story(
     image = article_image(
         topic
     )
+       
+    article_data = create_article_object(
+        topic,
+        category,
+        summary,
+        slug,
+        image
+    )
 
-    html_page = article_html(
+        database_file, database = load_articles_database(
+        repo
+    )
+
+    database["articles"].insert(
+        0,
+        article_data
+    )
+   
+    save_articles_database(
+      repo,
+      database_file,
+      database
+)
+
+
+     html_page = article_html(
         topic,
         category,
         article,
@@ -670,18 +754,16 @@ def publish_story(
        slug,
        topic,
        html_page
-    
+
     )
 
-   update_articles_database(
-       repo,
-       topic,
-       category,
-       summary, 
-       slug,
-       image
+    database["articles"] = database["articles"][:500]
 
-    
+    save_articles_database(
+        repo,
+        database_file,
+        database
+        
     )
 
     card = build_card(
