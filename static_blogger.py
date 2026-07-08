@@ -24,11 +24,12 @@ except Exception as e:
     print(f"❌ Repo Auth Error: {e}")
     sys.exit(1)
 
-# Fetch Topics
+# Fetch Topics safely without triggering Markdown copy-paste issues
 titles = []
 try:
     search_q = cat.replace(" ", "")
-    rss = requests.get(f"[https://news.google.com/rss/search?q=](https://news.google.com/rss/search?q=){search_q}&hl=en-IN&gl=IN&ceid=IN:en", timeout=10).text
+    news_base = "https://" + "[news.google.com/rss/search](https://news.google.com/rss/search)"
+    rss = requests.get(f"{news_base}?q={search_q}&hl=en-IN&gl=IN&ceid=IN:en", timeout=10).text
     titles = [t.split('</title>')[0] for t in rss.split('<title>')[2:20]]
 except: pass
 
@@ -41,7 +42,6 @@ summary_text = ""
 topic = ""
 slug = ""
 
-# Bypass Safety Filters Payload
 safety_settings = [
     {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
     {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
@@ -60,7 +60,9 @@ for attempt in range(3):
         continue
 
     try:
-        url = f"[https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=](https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=){GEMINI_API_KEY}"
+        # Split URL to prevent markdown brackets during copy-paste
+        gemini_url = "https://" + "[generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent](https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent)"
+        url = f"{gemini_url}?key={GEMINI_API_KEY}"
         
         main_payload = {
             "contents": [{"parts": [{"text": f"Write a massive journalistic editorial on: '{topic}'. Category: {cat}. {ANTI_AI_PROMPT}"}]}],
@@ -76,7 +78,6 @@ for attempt in range(3):
             
         clean_text = res_json['candidates'][0]['content']['parts'][0]['text'].replace("```html", "").replace("```", "").strip()
         
-        # Summary
         summary_payload = {
             "contents": [{"parts": [{"text": f"Write a 2-sentence journalistic teaser for: {topic}. No markdown."}]}],
             "safetySettings": safety_settings
@@ -100,7 +101,10 @@ if not article_html:
 time_str = datetime.datetime.now().strftime("%B %d, %Y")
 slug = f"{slug}-{random.randint(100,999)}"
 img_keyword = topic.replace(" ", "%20").replace('"', '').replace("'", "")
-image_url = f"[https://image.pollinations.ai/prompt/professional%20news%20photography%20of%20](https://image.pollinations.ai/prompt/professional%20news%20photography%20of%20){img_keyword}?width=1200&height=650&nologo=true"
+
+# Split image URL to prevent markdown formatting issues
+img_base = "https://" + "image.pollinations.ai/prompt/"
+image_url = f"{img_base}professional%20news%20photography%20of%20{img_keyword}?width=1200&height=650&nologo=true"
 
 full_page_html = f"""<!DOCTYPE html>
 <html lang="en">
