@@ -1,8 +1,9 @@
-name: AI Auto Blogger
+name: AI Auto Blogger (NYT Master)
 
 on:
   schedule:
-    - cron: '0 */2 * * *'
+    # Runs roughly 10 times a day (every 2.5 hours)
+    - cron: '0 1,4,6,9,11,14,16,19,21,23 * * *'
   workflow_dispatch:
 
 permissions:
@@ -11,7 +12,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
