@@ -663,12 +663,24 @@ def publish_story(
         image,
         slug
     )
-
+     
     save_article(
-        repo,
-        slug,
-        topic,
-        html_page
+       repo,
+       slug,
+       topic,
+       html_page
+    
+    )
+
+   update_articles_database(
+       repo,
+       topic,
+       category,
+       summary, 
+       slug,
+       image
+
+    
     )
 
     card = build_card(
