@@ -63,3 +63,35 @@ def save_json(path, data):
     except Exception as e:
 
         logger.exception(e)
+
+ def load_config():
+
+    config = load_json(CONFIG_FILE)
+
+    if not config:
+
+        logger.warning("Using default configuration.")
+
+        config = {
+
+            "homepage_limit": 30,
+
+            "hot_limit": 10,
+
+            "trending_limit": 30,
+
+            "default_category": "World",
+
+            "development": True
+
+        }
+
+    return config
+
+CONFIG = load_config()
+
+HOME_LIMIT = CONFIG["homepage_limit"]
+
+HOT_LIMIT = CONFIG["hot_limit"]
+
+TRENDING_LIMIT = CONFIG["trending_limit"]
