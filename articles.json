@@ -1,22 +1,3 @@
 {
-  "homepage": [],
-  "hot_news": {
-    "max_articles": 10,
-    "items": []
-  },
-  "trending": {
-    "max_articles": 30,
-    "items": []
-  },
-  "categories": {
-    "world": [],
-    "trending-news": [],
-    "business": [],
-    "stock-news": [],
-    "tech": [],
-    "sports": [],
-    "lifestyle": [],
-    "anime": [],
-    "food-nutrition": []
-  }
+  "articles": []
 }
