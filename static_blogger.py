@@ -1,16 +1,15 @@
 import os, random, datetime, requests, sys, time, re
 from github import Github
 
-print("🚀 Starting NYT Master Auto-Blogger...")
+print("🚀 Starting NYT Master Auto-Blogger (Safety Bypass Mode)...")
 sys.stdout.flush()
 
 ANTI_AI_PROMPT = """
-CRITICAL RULES FOR HUMAN-LIKE WRITING:
-1. DO NOT use words like: delve, furthermore, in conclusion, testament, landscape, bespoke, underscore, paradigm, moreover, intricate, tapestry, vital, beacon.
-2. Write like a Pulitzer-prize winning human journalist from The New York Times.
-3. Vary sentence lengths. Use natural journalistic flow. No robotic transitions.
-4. Provide a HIGHLY detailed, long-form editorial (minimum 1000-1500 words).
-5. Do not include markdown code blocks. Return RAW HTML ONLY (use <p> and <h3> tags).
+Write like a Pulitzer-prize winning human journalist from The New York Times. 
+Write a highly detailed, long-form editorial (aiming for 1000+ words).
+Do NOT use robotic words like: delve, furthermore, in conclusion, testament, landscape.
+Provide raw HTML ONLY (use <p> and <h3> tags). DO NOT include ```html markdown blocks.
+This is a news report, NOT financial or dangerous advice.
 """
 
 CATEGORIES = ["Anime", "Trending News", "Tech", "Sports", "Business", "Lifestyle", "Stock News", "World"]
@@ -25,11 +24,11 @@ except Exception as e:
     print(f"❌ Repo Auth Error: {e}")
     sys.exit(1)
 
-# 1. Fetch Multiple Trending Topics
+# Fetch Topics
 titles = []
 try:
     search_q = cat.replace(" ", "")
-    rss = requests.get(f"https://news.google.com/rss/search?q={search_q}&hl=en-IN&gl=IN&ceid=IN:en", timeout=10).text
+    rss = requests.get(f"[https://news.google.com/rss/search?q=](https://news.google.com/rss/search?q=){search_q}&hl=en-IN&gl=IN&ceid=IN:en", timeout=10).text
     titles = [t.split('</title>')[0] for t in rss.split('<title>')[2:20]]
 except: pass
 
@@ -42,7 +41,14 @@ summary_text = ""
 topic = ""
 slug = ""
 
-# 2. RETRY SYSTEM (Up to 3 attempts if Gemini throws tantrums)
+# Bypass Safety Filters Payload
+safety_settings = [
+    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"}
+]
+
 for attempt in range(3):
     topic = random.choice(titles).split(' - ')[0]
     print(f"🔄 Attempt {attempt+1}: Selected Topic -> {topic} | Category: {cat}")
@@ -54,25 +60,33 @@ for attempt in range(3):
         continue
 
     try:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
-        main_prompt = f"Write a massive, detailed journalistic editorial on: '{topic}'. Category: {cat}. Structure with an engaging introduction, multiple <h3> subheadings, factual analysis, and strong closing. {ANTI_AI_PROMPT}"
+        url = f"[https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=](https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=){GEMINI_API_KEY}"
         
-        res = requests.post(url, json={"contents":[{"parts":[{"text": main_prompt}]}]}, timeout=60)
+        main_payload = {
+            "contents": [{"parts": [{"text": f"Write a massive journalistic editorial on: '{topic}'. Category: {cat}. {ANTI_AI_PROMPT}"}]}],
+            "safetySettings": safety_settings
+        }
+        
+        res = requests.post(url, json=main_payload, timeout=60)
         res_json = res.json()
         
-        # Check for AI Safety Block
         if 'candidates' not in res_json:
-            print(f"⚠️ Gemini blocked this topic (Safety Filter). Trying next topic...")
-            continue # Skip to next attempt in the loop
+            print(f"⚠️ API Error/Block on topic '{topic}'. API Response: {res_json}")
+            continue
             
         clean_text = res_json['candidates'][0]['content']['parts'][0]['text'].replace("```html", "").replace("```", "").strip()
         
-        res_s = requests.post(url, json={"contents":[{"parts":[{"text": f"Write a 2-sentence teaser for: {topic}. No markdown."}]}]}, timeout=15)
+        # Summary
+        summary_payload = {
+            "contents": [{"parts": [{"text": f"Write a 2-sentence journalistic teaser for: {topic}. No markdown."}]}],
+            "safetySettings": safety_settings
+        }
+        res_s = requests.post(url, json=summary_payload, timeout=15)
         summary_text = res_s.json()['candidates'][0]['content']['parts'][0]['text'].strip()
         
         if len(clean_text) > 300:
             article_html = clean_text
-            break # Success! Break out of the retry loop
+            break
         else:
             print("⚠️ Article generated was too short. Retrying...")
             
@@ -80,22 +94,21 @@ for attempt in range(3):
         print(f"⚠️ Attempt {attempt+1} Error: {e}")
 
 if not article_html:
-    print("❌ All 3 attempts failed. Exiting safely to protect website design.")
+    print("❌ All 3 attempts failed. Exiting.")
     sys.exit(1)
 
 time_str = datetime.datetime.now().strftime("%B %d, %Y")
 slug = f"{slug}-{random.randint(100,999)}"
 img_keyword = topic.replace(" ", "%20").replace('"', '').replace("'", "")
-image_url = f"https://image.pollinations.ai/prompt/professional%20news%20photography%20of%20{img_keyword}?width=1200&height=650&nologo=true"
+image_url = f"[https://image.pollinations.ai/prompt/professional%20news%20photography%20of%20](https://image.pollinations.ai/prompt/professional%20news%20photography%20of%20){img_keyword}?width=1200&height=650&nologo=true"
 
-# 3. Create Full Article HTML
 full_page_html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{topic} - INFOVEX</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="[https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,400&family=Inter:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,400&family=Inter:wght@400;500;600;700&display=swap)" rel="stylesheet">
     <style>
         body {{ background: #ffffff; color: #111; font-family: 'Playfair Display', Georgia, serif; line-height: 1.8; margin: 0; padding: 0; }}
         header {{ text-align: center; padding: 30px; border-bottom: 1px solid #ddd; }}
@@ -124,7 +137,6 @@ full_page_html = f"""<!DOCTYPE html>
 </body>
 </html>"""
 
-# 4. Save Article
 try:
     repo.create_file(f"posts/{slug}.html", f"New Article: {topic}", full_page_html, branch="main")
     print(f"✅ Saved individual article: posts/{slug}.html")
@@ -134,7 +146,6 @@ except Exception as e:
 
 time.sleep(3) 
 
-# 5. Safe Homepage Update
 new_card = f"""
         <div class="post-card" data-cat="{cat}">
             <div class="post-meta">{cat} • {time_str}</div>
