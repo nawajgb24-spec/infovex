@@ -3,57 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INFOVEX — Global Daily Editorial</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --bg: #ffffff; --text: #111111; --border: #dddddd; --red: #b80000; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg); color: var(--text); font-family: 'Playfair Display', Georgia, serif; }
-        
-        header { text-align: center; padding: 40px 20px 20px; border-bottom: 2px solid var(--text); }
-        .logo { font-size: 58px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: var(--text); text-decoration: none; }
-        .tagline { font-family: 'Inter', sans-serif; font-size: 12px; color: #555; text-transform: uppercase; letter-spacing: 2px; margin-top: 10px; }
-        
-        nav { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; padding: 12px 20px; border-bottom: 1px double var(--text); font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; }
-        nav a { color: var(--text); text-decoration: none; cursor: pointer; }
-        nav a:hover { color: var(--red); text-decoration: underline; }
 
-        .main-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-        .section-title { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 800; text-transform: uppercase; border-bottom: 2px solid var(--text); padding-bottom: 5px; margin-bottom: 30px; }
-        
-        /* Post Cards */
-        .post-card { padding-bottom: 30px; margin-bottom: 30px; border-bottom: 1px solid var(--border); }
-        .post-meta { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; color: var(--red); text-transform: uppercase; margin-bottom: 8px; }
-        .post-card h2 { font-size: 32px; font-weight: 700; line-height: 1.2; margin-bottom: 12px; }
-        .post-card h2 a { color: var(--text); text-decoration: none; }
-        .post-card h2 a:hover { text-decoration: underline; }
-        .post-card p { font-size: 17px; color: #333; line-height: 1.6; }
-        
-        @media (max-width: 768px) { .logo { font-size: 40px; } .post-card h2 { font-size: 24px; } }
+    <title>INFOVEX — Global Daily Editorial</title>
+    <meta name="description" content="INFOVEX delivers global news, technology, business, sports, lifestyle, anime, stock market and world coverage in a clean editorial format.">
+    <meta name="robots" content="index,follow">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Replace with your production domain -->
+    <link rel="canonical" href="https://YOUR-DOMAIN/">
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root{
+            --bg:#ffffff;
+            --text:#111111;
+            --border:#dddddd;
+            --red:#b80000;
+        }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            background:var(--bg);
+            color:var(--text);
+            font-family:'Playfair Display',Georgia,serif;
+        }
+
+        header{
+            text-align:center;
+            padding:40px 20px 20px;
+            border-bottom:2px solid var(--text);
+        }
+
+        .logo{
+            font-size:58px;
+            font-weight:900;
+            letter-spacing:1px;
+            text-transform:uppercase;
+            color:var(--text);
+            text-decoration:none;
+        }
+
+        .tagline{
+            font-family:'Inter',sans-serif;
+            font-size:12px;
+            color:#555;
+            text-transform:uppercase;
+            letter-spacing:2px;
+            margin-top:10px;
+        }
+
+        nav{
+            display:flex;
+            justify-content:center;
+            gap:20px;
+            flex-wrap:wrap;
+            padding:12px 20px;
+            border-bottom:1px double var(--text);
+            font-family:'Inter',sans-serif;
+            font-size:13px;
+            font-weight:600;
+            text-transform:uppercase;
+        }
+
+        nav a{
+            color:var(--text);
+            text-decoration:none;
+            cursor:pointer;
+        }
+
+        nav a:hover{
+            color:var(--red);
+            text-decoration:underline;
+        }
+
+        .main-container{
+            max-width:1000px;
+            margin:40px auto;
+            padding:0 20px;
+        }
+
+        .section-title{
+            font-family:'Inter',sans-serif;
+            font-size:14px;
+            font-weight:800;
+            text-transform:uppercase;
+            border-bottom:2px solid var(--text);
+            padding-bottom:5px;
+            margin-bottom:30px;
+        }
+
+        .post-card{
+            padding-bottom:30px;
+            margin-bottom:30px;
+            border-bottom:1px solid var(--border);
+        }
+
+        .post-meta{
+            font-family:'Inter',sans-serif;
+            font-size:12px;
+            font-weight:700;
+            color:var(--red);
+            text-transform:uppercase;
+            margin-bottom:8px;
+        }
+
+        .post-card h2{
+            font-size:32px;
+            line-height:1.2;
+            margin-bottom:12px;
+        }
+
+        .post-card h2 a{
+            color:var(--text);
+            text-decoration:none;
+        }
+
+        .post-card h2 a:hover{
+            text-decoration:underline;
+        }
+
+        .post-card p{
+            font-size:17px;
+            color:#333;
+            line-height:1.6;
+        }
+
+        @media(max-width:768px){
+            .logo{
+                font-size:40px;
+            }
+
+            .post-card h2{
+                font-size:24px;
+            }
+        }
     </style>
 </head>
-<body>
-    <header>
-        <a href="/" class="logo">INFOVEX</a>
-        <div class="tagline">The Standard of Digital Journalism</div>
-    </header>
-    
-    <nav id="category-nav">
-        <a href="/">Home</a>
-        <a href="#">Anime</a>
-        <a href="#">Trending News</a>
-        <a href="#">Tech</a>
-        <a href="#">Sports</a>
-        <a href="#">Business</a>
-        <a href="#">Lifestyle</a>
-        <a href="#">Stock News</a>
-        <a href="#">World</a>
-    </nav>
 
-    <div class="main-container">
-        <div class="section-title">Top Stories</div>
-        <div id="posts-container">
-            </div>
+<body>
+
+<header>
+    <a href="/" class="logo">INFOVEX</a>
+    <div class="tagline">The Standard of Digital Journalism</div>
+</header>
+
+<nav id="category-nav">
+    <a href="/">Home</a>
+    <a href="#">Anime</a>
+    <a href="#">Trending News</a>
+    <a href="#">Tech</a>
+    <a href="#">Sports</a>
+    <a href="#">Business</a>
+    <a href="#">Lifestyle</a>
+    <a href="#">Stock News</a>
+    <a href="#">World</a>
+</nav>
+
+<div class="main-container">
+
+    <div class="section-title">
+        Top Stories
     </div>
+
+    <div id="posts-container">
+
+        <!-- BLOG_INSERT_MARKER -->
+
+    </div>
+
+</div>
+
 </body>
 </html>
