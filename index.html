@@ -3,47 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INFOVEX — Premium AI News Platform</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>INFOVEX — Global Daily Editorial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --nyt-black: #121212; --nyt-gray: #555555; --nyt-light-gray: #f4f4f4; --nyt-border: #dfdfdf; --nyt-red: #a31a1a; --bg-white: #ffffff; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Lora', Georgia, serif; background-color: var(--bg-white); color: var(--nyt-black); line-height: 1.6; padding-bottom: 50px; }
-        header { padding: 15px 20px 5px 20px; text-align: center; max-width: 1300px; margin: 0 auto; }
-        .logo { font-family: 'Cinzel', serif; font-size: 45px; font-weight: 900; letter-spacing: 3px; text-decoration: none; color: var(--nyt-black); display: inline-block; }
-        .categories-nav { border-top: 1px solid var(--nyt-border); border-bottom: 4px double var(--nyt-black); padding: 8px 0; max-width: 1300px; margin: 0 auto 15px auto; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
-        .categories-nav a { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--nyt-black); text-decoration: none; letter-spacing: 0.5px; transition: 0.15s; }
-        .categories-nav a:hover { color: var(--nyt-red); text-decoration: underline; }
-        .live-bar { background: #fafafa; border-bottom: 1px solid var(--nyt-border); padding: 8px 20px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; text-align: center; letter-spacing: 0.5px; margin-bottom: 25px; }
-        .live-dot { color: var(--nyt-red); animation: blink 1.2s infinite; margin-right: 5px; font-size: 16px; vertical-align: middle; }
-        @keyframes blink { 50% { opacity: 0; } }
-        .main-container { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 1fr 360px; gap: 40px; padding: 0 20px; }
-        .news-section { border-right: 1px solid var(--nyt-border); padding-right: 30px; }
-        .section-header { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; border-bottom: 1px solid var(--nyt-black); padding-bottom: 5px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--nyt-black); }
-        .post-card { border-bottom: 1px solid var(--nyt-border); padding-bottom: 25px; margin-bottom: 25px; display: flex; flex-direction: column; gap: 12px; }
-        .post-card .meta { font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; color: var(--nyt-red); font-weight: 700; letter-spacing: 0.5px; }
-        .post-card h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 28px; font-weight: 700; line-height: 1.2; color: var(--nyt-black); }
-        .shorts-sticky { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 20px; }
-        .short-card { background: var(--bg-white); border-bottom: 1px solid var(--nyt-border); padding-bottom: 15px; display: flex; flex-direction: column; gap: 8px; }
-        .short-card .short-tag { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; color: var(--nyt-red); text-transform: uppercase; letter-spacing: 0.5px; }
-        @media (max-width: 950px) { .main-container { grid-template-columns: 1fr; } }
+        :root { --bg: #ffffff; --text: #111111; --border: #dddddd; --red: #b80000; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Playfair Display', Georgia, serif; }
+        
+        header { text-align: center; padding: 40px 20px 20px; border-bottom: 2px solid var(--text); }
+        .logo { font-size: 58px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: var(--text); text-decoration: none; }
+        
+        nav { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; padding: 12px 20px; border-bottom: 1px double var(--text); font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; }
+        nav a { color: var(--text); text-decoration: none; cursor: pointer; }
+        nav a:hover, nav a.active { color: var(--red); text-decoration: underline; }
+
+        .main-container { max-width: 1200px; margin: 40px auto; display: grid; grid-template-columns: 1fr; padding: 0 20px; }
+        .section-title { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 800; text-transform: uppercase; border-bottom: 2px solid var(--text); padding-bottom: 5px; margin-bottom: 30px; }
+        
+        .post-card { display: flex; flex-direction: column; gap: 10px; padding-bottom: 30px; margin-bottom: 30px; border-bottom: 1px solid var(--border); }
+        .post-meta { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; color: var(--red); text-transform: uppercase; }
+        .post-card h2 { font-size: 32px; font-weight: 700; line-height: 1.2; }
+        .post-card h2 a { color: var(--text); text-decoration: none; }
+        .post-card h2 a:hover { text-decoration: underline; }
+        .post-card p { font-size: 16px; color: #444; line-height: 1.6; }
+        
+        @media (max-width: 768px) { .logo { font-size: 40px; } .post-card h2 { font-size: 24px; } }
     </style>
 </head>
 <body>
-    <header><a href="#" class="logo">INFOVEX</a></header>
-    <nav class="categories-nav">
-        <a href="#">Home</a><a href="#">Sports</a><a href="#">Lifestyle</a><a href="#">Stock News</a><a href="#">Technology</a><a href="#">Business</a>
+    <header><a href="/" class="logo">INFOVEX</a></header>
+    
+    <nav id="category-nav">
+        <a onclick="filterCat('All')">Home</a>
+        <a onclick="filterCat('Anime')">Anime</a>
+        <a onclick="filterCat('Trending News')">Trending News</a>
+        <a onclick="filterCat('Tech')">Tech</a>
+        <a onclick="filterCat('Sports')">Sports</a>
+        <a onclick="filterCat('Business')">Business</a>
+        <a onclick="filterCat('Lifestyle')">Lifestyle</a>
+        <a onclick="filterCat('Stock News')">Stock News</a>
+        <a onclick="filterCat('World')">World</a>
     </nav>
-    <div class="live-bar"><span class="live-dot">●</span> <b>LIVE DESK:</b> International Stream Online.</div>
+
     <div class="main-container">
-        <main class="news-section">
-            <div class="section-header">Latest Editorial Feed</div>
-            <div id="posts-container"></div>
-        </main>
-        <aside class="shorts-section">
-            <div class="section-header">⚡ Google Shorts</div>
-            <div id="shorts-container"></div>
-        </aside>
+        <div class="section-title" id="sec-title">Top Stories</div>
+        <div id="posts-container">
+            </div>
     </div>
+
+    <script>
+        function filterCat(cat) {
+            document.getElementById('sec-title').innerText = cat === 'All' ? 'Top Stories' : cat + ' News';
+            let posts = document.querySelectorAll('.post-card');
+            posts.forEach(post => {
+                if(cat === 'All' || post.getAttribute('data-cat') === cat) {
+                    post.style.display = 'flex';
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+        }
+    </script>
 </body>
 </html>
