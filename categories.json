@@ -1,0 +1,49 @@
+{
+  "categories": [
+    {
+      "id": "world",
+      "name": "World",
+      "homepage": true
+    },
+    {
+      "id": "trending-news",
+      "name": "Trending News",
+      "homepage": true
+    },
+    {
+      "id": "business",
+      "name": "Business",
+      "homepage": true
+    },
+    {
+      "id": "stock-news",
+      "name": "Stock News",
+      "homepage": true
+    },
+    {
+      "id": "tech",
+      "name": "Tech",
+      "homepage": true
+    },
+    {
+      "id": "sports",
+      "name": "Sports",
+      "homepage": true
+    },
+    {
+      "id": "lifestyle",
+      "name": "Lifestyle",
+      "homepage": true
+    },
+    {
+      "id": "anime",
+      "name": "Anime",
+      "homepage": true
+    },
+    {
+      "id": "food-nutrition",
+      "name": "Food & Nutrition",
+      "homepage": true
+    }
+  ]
+}
