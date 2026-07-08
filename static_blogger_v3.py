@@ -88,10 +88,103 @@ def save_json(path, data):
 
     return config
 
-CONFIG = load_config()
+         CONFIG = load_config()
 
-HOME_LIMIT = CONFIG["homepage_limit"]
+         HOME_LIMIT = CONFIG["homepage_limit"]
 
-HOT_LIMIT = CONFIG["hot_limit"]
+         HOT_LIMIT = CONFIG["hot_limit"]
 
-TRENDING_LIMIT = CONFIG["trending_limit"]
+         TRENDING_LIMIT = CONFIG["trending_limit"]
+
+ def load_articles():
+
+    data = load_json(ARTICLES_DB)
+
+    if not data:
+
+        return []
+
+    if isinstance(data, list):
+
+        return data
+
+    if "articles" in data:
+
+        return data["articles"]
+
+    return []
+
+def save_articles(articles):
+
+    save_json(
+
+        ARTICLES_DB,
+
+        {
+
+            "articles": articles
+
+        }
+
+    )
+
+def article_exists(slug):
+
+    articles = load_articles()
+
+    for article in articles:
+
+        if article.get("slug") == slug:
+
+            return True
+
+    return False
+
+def add_article(article):
+
+    articles = load_articles()
+
+    slug = article.get("slug")
+
+    if article_exists(slug):
+
+        logger.info(f"Article already exists: {slug}")
+
+        return False
+
+    article["published"] = datetime.utcnow().isoformat()
+
+    articles.insert(0, article)
+
+    save_articles(articles)
+
+    logger.info(f"Article added: {slug}")
+
+    return True
+
+def latest_articles(limit=HOME_LIMIT):
+
+    articles = load_articles()
+
+    return articles[:limit]
+
+def homepage_articles():
+
+    articles = latest_articles(HOME_LIMIT)
+
+    return articles
+
+def hot_news():
+
+    articles = latest_articles()
+
+
+def trending_news():
+
+    articles = latest_articles()
+
+    return articles[:TRENDING_LIMIT]
+    return articles[:HOT_LIMIT]
+
+
+
