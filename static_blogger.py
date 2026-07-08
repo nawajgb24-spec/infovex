@@ -279,30 +279,45 @@ def choose_topic(repo, topics):
 # Homepage Helpers
 # ==========================================================
 
-CARD_PATTERN = re.compile(
-    r'<div class="post-card".*?</div>\s*',
-    re.DOTALL,
-)
-
-def homepage_cards(html):
-    return CARD_PATTERN.findall(html)
-
-
-def keep_latest_cards(cards):
-    return cards[:MAX_HOME_POSTS]
 
 
 def inject_card(html, card):
 
-    cards = homepage_cards(html)
+    start = html.find('<div id="posts-container">')
+
+    if start == -1:
+        raise RuntimeError("posts-container not found.")
+
+    marker = html.find(HOME_MARKER)
+
+    if marker == -1:
+        raise RuntimeError("BLOG_INSERT_MARKER missing.")
+
+    existing = html[start:marker]
+
+    cards = re.findall(
+        r'<div class="post-card".*?</div>\s*</div>',
+        existing,
+        re.DOTALL
+    )
 
     cards.insert(0, card)
 
-    cards = keep_latest_cards(cards)
+    cards = cards[:MAX_HOME_POSTS]
 
-    replacement = "\n".join(cards) + "\n        " + HOME_MARKER
+    new_posts = "\n\n".join(cards)
 
-    return html.replace(HOME_MARKER, replacement)
+    before = html[:start]
+
+    after = html[marker:]
+
+    return (
+        before
+        + '<div id="posts-container">\n'
+        + new_posts
+        + "\n\n"
+        + after
+    )
 
 # ==========================================================
 # Gemini API
