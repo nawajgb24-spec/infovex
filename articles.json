@@ -1,7 +1,13 @@
 {
   "homepage": [],
-  "hot_news": [],
-  "trending": [],
+  "hot_news": {
+    "max_articles": 10,
+    "items": []
+  },
+  "trending": {
+    "max_articles": 30,
+    "items": []
+  },
   "categories": {
     "world": [],
     "trending-news": [],
