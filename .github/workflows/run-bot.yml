@@ -1,33 +1,41 @@
-name: AI Auto Blogger (NYT Master)
+name: INFOVEX Auto Blogger
 
 on:
   schedule:
-    # Runs roughly 10 times a day (every 2.5 hours)
+    # 10 runs per day (UTC)
     - cron: '0 1,4,6,9,11,14,16,19,21,23 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: infovex-auto-blogger
+  cancel-in-progress: false
+
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.11"
 
-      - name: Install libraries
-        run: pip install requests PyGithub
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests PyGithub urllib3
 
-      - name: Run AI Script
+      - name: Run INFOVEX Auto Blogger
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-        run: python static_blogger.py
+        run: |
+          python static_blogger.py
