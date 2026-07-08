@@ -1,1 +1,16 @@
-[]
+{
+  "homepage": [],
+  "hot_news": [],
+  "trending": [],
+  "categories": {
+    "world": [],
+    "trending-news": [],
+    "business": [],
+    "stock-news": [],
+    "tech": [],
+    "sports": [],
+    "lifestyle": [],
+    "anime": [],
+    "food-nutrition": []
+  }
+}
