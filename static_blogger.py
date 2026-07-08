@@ -2,6 +2,7 @@ import os, random, datetime, requests, sys, time, re
 from github import Github
 
 print("🚀 Starting NYT Master Auto-Blogger...")
+sys.stdout.flush()
 
 ANTI_AI_PROMPT = """
 CRITICAL RULES FOR HUMAN-LIKE WRITING:
@@ -24,59 +25,68 @@ except Exception as e:
     print(f"❌ Repo Auth Error: {e}")
     sys.exit(1)
 
-# 1. Topic Fetching
-topic = "Global Strategic Policy Updates"
+# 1. Fetch Multiple Trending Topics
+titles = []
 try:
     search_q = cat.replace(" ", "")
     rss = requests.get(f"https://news.google.com/rss/search?q={search_q}&hl=en-IN&gl=IN&ceid=IN:en", timeout=10).text
-    titles = [t.split('</title>')[0] for t in rss.split('<title>')[2:15]]
-    if titles: topic = random.choice(titles).split(' - ')[0]
+    titles = [t.split('</title>')[0] for t in rss.split('<title>')[2:20]]
 except: pass
 
-print(f"✅ Selected Topic: {topic} | Category: {cat}")
-
-# DUPLICATE CHECK
-slug = re.sub(r'\W+', '-', topic.lower())[:50]
-if slug in html or topic in html:
-    print("⚠️ Topic already exists on website. Stopping script to prevent duplicates.")
-    sys.exit(0)
-
-img_keyword = topic.replace(" ", "%20").replace('"', '').replace("'", "")
-image_url = f"https://image.pollinations.ai/prompt/professional%20news%20photography%20of%20{img_keyword}?width=1200&height=650&nologo=true"
-
-# 2. STRICT CONTENT GENERATION
-article_html = ""
-summary_text = ""
+if not titles:
+    titles = ["Global Market Strategies and Innovations", "World Economic Shifts", "Tech Advancements for the Future"]
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-if GEMINI_API_KEY:
+article_html = ""
+summary_text = ""
+topic = ""
+slug = ""
+
+# 2. RETRY SYSTEM (Up to 3 attempts if Gemini throws tantrums)
+for attempt in range(3):
+    topic = random.choice(titles).split(' - ')[0]
+    print(f"🔄 Attempt {attempt+1}: Selected Topic -> {topic} | Category: {cat}")
+    sys.stdout.flush()
+
+    slug = re.sub(r'\W+', '-', topic.lower())[:50]
+    if slug in html or topic in html:
+        print("⚠️ Topic already exists on website. Trying another...")
+        continue
+
     try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
-        
-        # Main Article
         main_prompt = f"Write a massive, detailed journalistic editorial on: '{topic}'. Category: {cat}. Structure with an engaging introduction, multiple <h3> subheadings, factual analysis, and strong closing. {ANTI_AI_PROMPT}"
-        res = requests.post(url, json={"contents":[{"parts":[{"text": main_prompt}]}]}, timeout=60)
-        clean_text = res.json()['candidates'][0]['content']['parts'][0]['text'].replace("```html", "").replace("```", "").strip()
         
-        # Summary
+        res = requests.post(url, json={"contents":[{"parts":[{"text": main_prompt}]}]}, timeout=60)
+        res_json = res.json()
+        
+        # Check for AI Safety Block
+        if 'candidates' not in res_json:
+            print(f"⚠️ Gemini blocked this topic (Safety Filter). Trying next topic...")
+            continue # Skip to next attempt in the loop
+            
+        clean_text = res_json['candidates'][0]['content']['parts'][0]['text'].replace("```html", "").replace("```", "").strip()
+        
         res_s = requests.post(url, json={"contents":[{"parts":[{"text": f"Write a 2-sentence teaser for: {topic}. No markdown."}]}]}, timeout=15)
         summary_text = res_s.json()['candidates'][0]['content']['parts'][0]['text'].strip()
         
-        if len(clean_text) > 300: # Ensure it actually wrote a long article
+        if len(clean_text) > 300:
             article_html = clean_text
+            break # Success! Break out of the retry loop
         else:
-            raise ValueError("Generated article is too short.")
+            print("⚠️ Article generated was too short. Retrying...")
             
     except Exception as e:
-        print(f"❌ Gemini failed to write full article: {e}. Exiting safely without uploading garbage.")
-        sys.exit(1) # Stops here, doesn't upload 1-line crap!
+        print(f"⚠️ Attempt {attempt+1} Error: {e}")
 
 if not article_html:
-    print("❌ No article content generated. Exiting.")
+    print("❌ All 3 attempts failed. Exiting safely to protect website design.")
     sys.exit(1)
 
 time_str = datetime.datetime.now().strftime("%B %d, %Y")
 slug = f"{slug}-{random.randint(100,999)}"
+img_keyword = topic.replace(" ", "%20").replace('"', '').replace("'", "")
+image_url = f"https://image.pollinations.ai/prompt/professional%20news%20photography%20of%20{img_keyword}?width=1200&height=650&nologo=true"
 
 # 3. Create Full Article HTML
 full_page_html = f"""<!DOCTYPE html>
@@ -114,7 +124,7 @@ full_page_html = f"""<!DOCTYPE html>
 </body>
 </html>"""
 
-# Save Article
+# 4. Save Article
 try:
     repo.create_file(f"posts/{slug}.html", f"New Article: {topic}", full_page_html, branch="main")
     print(f"✅ Saved individual article: posts/{slug}.html")
@@ -124,9 +134,9 @@ except Exception as e:
 
 time.sleep(3) 
 
-# 4. Safe Homepage Update (No Trimming/Cutting code!)
+# 5. Safe Homepage Update
 new_card = f"""
-        <div class="post-card">
+        <div class="post-card" data-cat="{cat}">
             <div class="post-meta">{cat} • {time_str}</div>
             <h2><a href="posts/{slug}.html">{topic}</a></h2>
             <p>{summary_text}</p>
