@@ -4,13 +4,12 @@ from github import Github
 print("🚀 Starting NYT Master Auto-Blogger...")
 sys.stdout.flush()
 
-# Anti-AI Words (To bypass Google AI detection 100%)
 ANTI_AI_PROMPT = """
 CRITICAL RULES FOR HUMAN-LIKE WRITING:
 1. DO NOT use words like: delve, furthermore, in conclusion, testament, landscape, bespoke, underscore, paradigm, moreover, intricate, tapestry, vital, beacon.
 2. Write like a Pulitzer-prize winning human journalist from The New York Times.
 3. Vary sentence lengths. Use natural journalistic flow. No robotic transitions.
-4. The article MUST be extremely detailed, aiming for 2500 to 5000 words. Dive deep into background, expert opinions, future impacts, and detailed analysis.
+4. The article MUST be extremely detailed, aiming for 2500 to 5000 words.
 5. Do not include markdown code blocks. Return RAW HTML ONLY.
 """
 
@@ -20,52 +19,58 @@ cat = random.choice(CATEGORIES)
 try:
     g = Github(os.getenv("GITHUB_TOKEN"))
     repo = g.get_repo(os.getenv("GITHUB_REPOSITORY"))
+    contents = repo.get_contents("index.html")
+    html = contents.decoded_content.decode("utf-8")
 except Exception as e:
     print(f"❌ Repo Auth Error: {e}")
     sys.exit(1)
 
-# 1. Fetch Trending Topic (Google News RSS)
-topic = "Global Market Strategies and Tech Innovations"
+# 1. Fetch Trending Topic safely
+topic = "Global Market Strategies and Innovations"
 try:
     search_q = cat.replace(" ", "")
     rss = requests.get(f"https://news.google.com/rss/search?q={search_q}&hl=en-IN&gl=IN&ceid=IN:en", timeout=10).text
     titles = [t.split('</title>')[0] for t in rss.split('<title>')[2:15]]
-    if titles: topic = random.choice(titles).split(' - ')[0]
+    if titles: 
+        topic = random.choice(titles).split(' - ')[0]
 except: pass
 
-print(f"✅ Topic: {topic} | Category: {cat}")
+print(f"✅ Selected Topic: {topic} | Category: {cat}")
 sys.stdout.flush()
 
-# 2. Generate HD Image (Copyright Free & Official looking via Pollinations AI)
+# DUPLICATE CHECK: Agar topic pehle se front page par hai toh yahin rok do
+slug = re.sub(r'\W+', '-', topic.lower())[:50]
+if slug in html or topic in html:
+    print("⚠️ Topic already exists on website. Skipping to avoid duplicates.")
+    sys.exit(0)
+
+# 2. HD Image URL (Copyright Free)
 img_keyword = topic.replace(" ", "%20").replace('"', '').replace("'", "")
 image_url = f"https://image.pollinations.ai/prompt/professional%20news%20photography%20of%20{img_keyword}?width=1200&height=650&nologo=true"
 
-# 3. Generate 2500+ Word Content via Gemini
-article_html = f"<p>Breaking detailed coverage on {topic}. Stay tuned for full analysis.</p>"
+# 3. Generate Content
+article_html = f"<p>Breaking detailed coverage on {topic}.</p>"
 summary_text = f"An in-depth look at {topic}."
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if GEMINI_API_KEY:
     try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
-        
-        main_prompt = f"Write a massive, comprehensive 2500-word editorial on the topic: '{topic}'. Category: {cat}. Structure it with an engaging introduction, multiple subheadings (using <h3>), detailed factual analysis, quotes (made up but realistic), and a strong closing. {ANTI_AI_PROMPT}"
+        main_prompt = f"Write a massive 2500-word editorial on: '{topic}'. Category: {cat}. Structure with engaging introduction, <h3> subheadings, factual analysis, and strong closing. {ANTI_AI_PROMPT}"
         
         res = requests.post(url, json={"contents":[{"parts":[{"text": main_prompt}]}]}, timeout=60)
         clean_text = res.json()['candidates'][0]['content']['parts'][0]['text'].replace("```html", "").replace("```", "").strip()
-        if len(clean_text) > 100:
-            article_html = clean_text
+        if len(clean_text) > 100: article_html = clean_text
             
-        # Get brief summary for homepage card
-        res_s = requests.post(url, json={"contents":[{"parts":[{"text": f"Write a 2-sentence journalistic teaser for: {topic}. No markdown."}]}]}, timeout=15)
+        res_s = requests.post(url, json={"contents":[{"parts":[{"text": f"Write a 2-sentence teaser for: {topic}. No markdown."}]}]}, timeout=15)
         summary_text = res_s.json()['candidates'][0]['content']['parts'][0]['text'].strip()
     except Exception as e:
         print(f"⚠️ Content Gen Error: {e}")
 
 time_str = datetime.datetime.now().strftime("%B %d, %Y")
-slug = re.sub(r'\W+', '-', topic.lower())[:50] + f"-{random.randint(100,999)}"
+slug = f"{slug}-{random.randint(100,999)}"
 
-# 4. Create the Individual Article Page (This prevents deletion and 413 error!)
+# 4. Create Individual Article Page (Safe in /posts/ folder)
 full_page_html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -100,40 +105,27 @@ full_page_html = f"""<!DOCTYPE html>
 </body>
 </html>"""
 
-# Save the new article in a 'posts' folder
 try:
     repo.create_file(f"posts/{slug}.html", f"New Article: {topic}", full_page_html, branch="main")
     print(f"✅ Saved individual article: posts/{slug}.html")
 except Exception as e:
     print(f"❌ Error saving article: {e}")
 
-time.sleep(3) # Server cooldown
+time.sleep(3) 
 
-# 5. Update Homepage (index.html) with a small Card
-try:
-    contents = repo.get_contents("index.html")
-    html = contents.decoded_content.decode("utf-8")
-    
-    new_card = f"""
-    <div class="post-card" data-cat="{cat}">
-        <div class="post-meta">{cat} • {time_str}</div>
-        <h2><a href="posts/{slug}.html">{topic}</a></h2>
-        <p>{summary_text}</p>
-    </div>
-    """
-    
-    if "" in html:
-        new_html = html.replace("", new_card)
-        
-        # Keep only top 30 on homepage to stay lightning fast (Old posts live forever in /posts/ folder)
-        parts = new_html.split('<div class="post-card" data-cat=')
-        if len(parts) > 31: 
-            new_html = parts[0] + '<div class="post-card" data-cat=' + '<div class="post-card" data-cat='.join(parts[1:31]) + '</div>\n    </div>\n\n    <script>'
-        
-        repo.update_file(contents.path, f"Homepage Update: {cat}", new_html, contents.sha)
-        print("🎉 SUCCESS: Master System Executed Flawlessly!")
-    else:
-        print("❌ Marker missing in index.html")
-except Exception as e:
-    print(f"❌ Error updating homepage: {e}")
+# 5. Safely Update Homepage
+new_card = f"""
+        <div class="post-card" data-cat="{cat}">
+            <div class="post-meta">{cat} • {time_str}</div>
+            <h2><a href="posts/{slug}.html">{topic}</a></h2>
+            <p>{summary_text}</p>
+        </div>
+        """
+
+if "" in html:
+    new_html = html.replace("", new_card)
+    repo.update_file(contents.path, f"Homepage Update: {cat}", new_html, contents.sha)
+    print("🎉 SUCCESS: Homepage updated flawlessly!")
+else:
+    print("❌ Marker missing in index.html")
     sys.exit(1)
