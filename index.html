@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#ffffff">
 
     <!-- Replace with your production domain -->
-    <link rel="canonical" href="https://YOUR-DOMAIN/">
+    <link rel="canonical" href="https://infovex.vercel.app/">
 
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -176,6 +176,38 @@
 </div>
 
 </div>
+<script>
+const links = document.querySelectorAll("#category-nav a");
+const cards = document.querySelectorAll(".post-card");
 
+links.forEach(link => {
+
+    link.addEventListener("click", function(e){
+
+        const category = this.textContent.trim();
+
+        if(category !== "Home"){
+            e.preventDefault();
+        }
+
+        cards.forEach(card => {
+
+            if(category === "Home"){
+                card.style.display = "";
+                return;
+            }
+
+            if(card.dataset.cat === category){
+                card.style.display = "";
+            }else{
+                card.style.display = "none";
+            }
+
+        });
+
+    });
+
+});
+</script>
 </body>
 </html>
