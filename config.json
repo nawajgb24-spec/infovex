@@ -1,0 +1,25 @@
+{
+  "site": {
+    "name": "INFOVEX",
+    "tagline": "The Standard of Digital Journalism",
+    "homepage_posts": 30,
+    "hot_news_limit": 10,
+    "trending_limit": 30,
+    "sidebar_enabled": true,
+    "search_enabled": true,
+    "related_posts": true,
+    "reading_time": true
+  },
+
+  "categories": [
+    "World",
+    "Trending News",
+    "Business",
+    "Stock News",
+    "Tech",
+    "Sports",
+    "Lifestyle",
+    "Anime",
+    "Food & Nutrition"
+  ]
+}
