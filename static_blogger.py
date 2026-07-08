@@ -39,9 +39,11 @@ HOME_MARKER = "<!-- BLOG_INSERT_MARKER -->"
 MAX_HOME_POSTS = 30
 
 NEWS_RSS_URL = "https://news.google.com/rss/search"
+GEMINI_MODEL = "gemini-2.5-flash"
+
 GEMINI_URL = (
-    "https://generativelanguage.googleapis.com/"
-    "v1beta/models/gemini-1.5-flash:generateContent"
+     f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
+
 )
 
 ANTI_AI_PROMPT = """
